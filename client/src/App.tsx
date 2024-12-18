@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import './App.css';
 import axios from 'axios';
+import { SERVER_URL } from './config/envVariables';
 
 // Define the interface
 export interface ToDoObject {
@@ -21,7 +22,7 @@ function App() {
     const fetchTodos = async () => {
       try {
         const response = await axios.get<ToDoObject[]>(
-          'http://localhost:4000/todolist/all'
+          `${SERVER_URL}/todolist/all`
         );
         setTodos(response.data); // Set fetched todos to state
       } catch (err: unknown) {
