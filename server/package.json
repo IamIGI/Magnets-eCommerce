@@ -7,7 +7,7 @@
     "build": "tsc",
     "watch": "tsc --watch",
     "dev": "ts-node-dev --transpile-only --respawn src/index.ts",
-    "prod": "node dits/index.js"
+    "prod": "node dist/index.js"
   },
   "keywords": [],
   "author": "",

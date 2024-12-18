@@ -60,7 +60,7 @@ Clone Your Backend Repository
 ```
 
 ```bash
- git clone https://github.com/yourusername/your-repo.git
+ git clone https://github.com/IamIGI/Magnets-eCommerce.git
 ```
 
 ```bash
@@ -73,13 +73,19 @@ Install Dependencies
  npm install
 ```
 
-Create .env file & configure Environment Variables
+Create .env file & configure Environment Variables (edit also if exists)
 
 ```bash
  nano .env
 ```
 
 add environment variables then save and exit (Ctrl + X, then Y and Enter).
+
+Check content
+
+```bash
+ cat .env
+```
 
 Installing pm2 to Start Backend
 
@@ -88,10 +94,10 @@ Installing pm2 to Start Backend
 ```
 
 ```bash
- pm2 start server.js --name project-backend
+ pm2 start dist/index.js --name magnets-server
 ```
 
-Start Backend on startup
+Start Backend on VPS startup (when you restart VPS, the server will startup automatically)
 
 ```bash
  pm2 startup
@@ -101,6 +107,37 @@ Start Backend on startup
  pm2 save
 ```
 
+Server status:
+
+```bash
+ pm2 list
+```
+
+Server logs:
+
+```bash
+ pm2 logs magnets-server --lines 1000
+```
+
+Server logs in real-time:
+
+```bash
+ pm2 logs magnets-server
+```
+
+Save to file
+
+```bash
+ pm2 logs magnets-server --lines 1000 > magnets-server-logs.txt
+```
+
+Restart server
+
+```bash
+ pm2 restart magnets-server
+```
+
+-----------------FIREWALL(config)--------------
 Allowing backend port in firewall
 
 ```bash
@@ -283,7 +320,3 @@ Verify Auto-Renewal
 ```bash
 certbot renew --dry-run
 ```
-
-If you still need help in deployment:
-
-Contact us on email : greatstackdev@gmail.com
