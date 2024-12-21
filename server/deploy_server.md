@@ -205,16 +205,16 @@ adding Nginx in firewall
 Configure Nginx for React Frontends
 
 ```bash
- nano /etc/nginx/sites-available/yourdomain1.com.conf
+ nano /etc/nginx/sites-available/igitest.pl.conf
 ```
 
 ```bash
  server {
     listen 80;
-    server_name yourdomain1.com www.yourdomain1.com;
+    server_name igitest.pl www.igitest.pl;
 
     location / {
-        root /var/www/your-repo/frontend/dist;
+        root /var/www/Magnets-eCommerce/client/dist;
         try_files $uri /index.html;
     }
 }
@@ -231,10 +231,10 @@ Create a similar file for the second or multiple React app.
 ```bash
 server {
     listen 80;
-    server_name yourdomain2.com www.yourdomain2.com;
+    server_name admin.igitest.pl;
 
     location / {
-        root /var/www/react-app-2/dist;
+        root /var/www/Magnets-eCommerce/admin-client/dist;
         try_files $uri /index.html;
     }
 }
@@ -243,11 +243,11 @@ server {
 Create symbolic links to enable the sites.
 
 ```bash
-ln -s /etc/nginx/sites-available/yourdomain1.com.conf /etc/nginx/sites-enabled/
+ln -s /etc/nginx/sites-available/igitest.pl.conf /etc/nginx/sites-enabled/
 ```
 
 ```bash
-ln -s /etc/nginx/sites-available/yourdomain2.com.conf /etc/nginx/sites-enabled/
+ln -s /etc/nginx/sites-available/admin.igitest.pl.conf /etc/nginx/sites-enabled/
 ```
 
 Test the Nginx configuration for syntax errors.
@@ -255,6 +255,8 @@ Test the Nginx configuration for syntax errors.
 ```bash
 nginx -t
 ```
+
+Restart the Nginx server
 
 ```bash
 systemctl restart nginx
