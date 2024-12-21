@@ -1,5 +1,7 @@
 ## Deploying MERN Stack Project on Hostinger VPS
 
+Documentation source: https://www.youtube.com/watch?v=o2J_jdKBLI4
+
 - Preparing the VPS Environment
 - Setting Up the MongoDB Database
 - Deploying the Express and Node.js Backend
@@ -8,8 +10,6 @@
 - Setting Up SSL Certificates
 
 ### 1. Preparing the VPS Environment
-
-#### Get you VPS Hosting here : [Hostinger VPS](https://greatstack.dev/go/hostinger-vps)
 
 Log in to Your VPS in Terminal
 
@@ -259,21 +259,29 @@ nginx -t
 Restart the Nginx server
 
 ```bash
-systemctl restart nginx
+sudo systemctl restart nginx
 ```
+
+Now both domains should work and be able to connect to server:
+(remember about .env files)
+
+ADMIN: admin.igitest.pl
+page: igitest.pl
 
 ### 5. Configuring Nginx as a Reverse Proxy
 
-Update Backend Nginx Configuration
+Update Backend Nginx Configuration (so backend will be available via domain name)
 
 ```bash
-nano /etc/nginx/sites-available/api.yourdomain.com.conf
+nano /etc/nginx/sites-available/api.igitest.pl.conf
 ```
+
+PORT: backend server port
 
 ```bash
 server {
     listen 80;
-    server_name api.yourdomain.com;
+    server_name api.igitest.pl;
 
     location / {
         proxy_pass http://localhost:4000;
@@ -288,7 +296,7 @@ server {
 Create symbolic links to enable the sites.
 
 ```bash
-ln -s /etc/nginx/sites-available/api.yourdomain.com.conf /etc/nginx/sites-enabled/
+ln -s /etc/nginx/sites-available/api.igitest.pl.conf /etc/nginx/sites-enabled/
 ```
 
 Restart nginx
@@ -302,6 +310,7 @@ systemctl restart nginx
 Point all your domain & sub-domain on VPS IP address by adding DNS records in your domain manager
 
 Now your website will be live on domain name
+![alt text](image.png)
 
 ### 6. Setting Up SSL Certificates
 
@@ -314,7 +323,7 @@ sudo apt install -y certbot python3-certbot-nginx
 Obtain SSL Certificates
 
 ```bash
-certbot --nginx -d yourdomain1.com -d www.yourdomain1.com -d yourdomain2.com -d api.yourdomain.com
+certbot --nginx -d igitest.pl -d www.igitest.pl -d admin.igitest.pl -d api.igitest.pl
 ```
 
 Verify Auto-Renewal
