@@ -62,7 +62,7 @@ components:
       properties:
         id:
           type: string
-          description: Unique identifier for the product
+          description: Unique identifier for the product3
         name:
           type: string
           description: Name of the product

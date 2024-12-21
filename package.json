@@ -1,0 +1,10 @@
+{
+    "name": "global-scripts",
+    "version": "1.0.0",
+    "scripts": {
+        "gen:magnets-api-all": "npm run gen:magnets-api --prefix client && npm run gen:magnets-api --prefix admin-client && npm run gen:magnets-api --prefix server"
+    },
+    "devDependencies": {
+        "@openapitools/openapi-generator-cli": "^2.15.3"
+    }
+}
