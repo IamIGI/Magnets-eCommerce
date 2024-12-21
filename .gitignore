@@ -23,6 +23,13 @@ client/node_modules/
 client/dist/
 client/.DS_Store
 
+# Client folder: React Vite TypeScript client
+admin-client/.env
+admin-client/.env.local
+admin-client/node_modules/
+admin-client/dist/
+admin-client/.DS_Store
+
 # Server folder: Node Express TypeScript server
 server/.env
 server/.env.local
