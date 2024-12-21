@@ -22,6 +22,7 @@ client/.env.local
 client/node_modules/
 client/dist/
 client/.DS_Store
+client/src/api/magnetsServer/generated
 
 # Client folder: React Vite TypeScript client
 admin-client/.env
@@ -29,6 +30,7 @@ admin-client/.env.local
 admin-client/node_modules/
 admin-client/dist/
 admin-client/.DS_Store
+admin-client/src/api/magnetsServer/generated
 
 # Server folder: Node Express TypeScript server
 server/.env
@@ -36,6 +38,7 @@ server/.env.local
 server/node_modules/
 server/dist/
 server/.DS_Store
+server/src/api/magnetsServer/generated
 
 # OS-specific files
 .DS_Store

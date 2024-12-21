@@ -1,0 +1,77 @@
+openapi: 3.0.3
+info:
+  title: Magnets e-Commerce API
+  description: API for managing products, orders, and user accounts for the Magnets e-Commerce platform.
+  version: 1.0.0
+servers:
+  - url: http://localhost:4000
+    description: Development server
+  - url: https://api.igitest.pl
+    description: Production server
+
+paths:
+  /products:
+    get:
+      summary: Get a list of products
+      responses:
+        '200':
+          description: A JSON array of product objects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+    post:
+      summary: Create a new product
+      requestBody:
+        description: Product object to be added
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        '201':
+          description: Product created successfully
+
+  /products/{id}:
+    get:
+      summary: Get a product by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The product ID
+      responses:
+        '200':
+          description: A product object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: Product not found
+
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the product3
+        name:
+          type: string
+          description: Name of the product
+        description:
+          type: string
+          description: Description of the product
+        price:
+          type: number
+          description: Price of the product
+        inStock:
+          type: boolean
+          description: Availability of the product
