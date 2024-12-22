@@ -1,6 +1,6 @@
 .wrapper {
   width: 100%;
-  height: fit-content;
+  height: var(--navbar-height);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -24,11 +24,24 @@
   }
 }
 
+.mobileNavbar {
+  display: none;
+
+  @media (max-width: 800px) {
+    display: flex;
+    gap: 1rem;
+  }
+}
+
 .links {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 0.2rem;
+
+  @media (max-width: 800px) {
+    display: none;
+  }
 }
 
 .icons {
@@ -36,4 +49,8 @@
   justify-content: center;
   align-items: center;
   gap: 1.5rem;
+
+  @media (max-width: 800px) {
+    display: none;
+  }
 }

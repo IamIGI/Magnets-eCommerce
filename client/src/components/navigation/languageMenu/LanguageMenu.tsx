@@ -1,12 +1,14 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import classes from './LanguageMenu.module.scss';
+import { useToggleState } from '../../../hooks/useToggleState';
 
 const LanguageMenu = () => {
-  const [menuVisibility, setMenuVisibility] = useState<boolean>(false);
+  const [menuVisibility, toggleMenuVisibility, setMenuVisibility] =
+    useToggleState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   const handleLangChange = () => {
-    setMenuVisibility(!menuVisibility);
+    toggleMenuVisibility();
   };
 
   useEffect(() => {
