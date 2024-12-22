@@ -1,0 +1,11 @@
+.wrapper {
+  $size: 40px;
+  width: $size;
+  height: $size;
+  background-color: transparent;
+  transition: 0.2s;
+
+  &:hover {
+    scale: 1.2;
+  }
+}
