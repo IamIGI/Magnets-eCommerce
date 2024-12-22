@@ -25,6 +25,8 @@ canvas,
 svg {
   display: block;
   max-width: 100%;
+  outline: none;
+  border: none;
 }
 
 input,
@@ -37,4 +39,24 @@ select {
 a {
   text-decoration: none;
   color: inherit;
+}
+
+button {
+  cursor: pointer;
+  outline: none;
+  border: none;
+}
+
+.white-svg-icon {
+  //https://codepen.io/sosuke/pen/Pjoqqp
+  filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(93deg) brightness(103%)
+    contrast(103%);
+  // color: white;
+}
+
+.black-svg-icon {
+  //black
+  filter: invert(55%) sepia(0%) saturate(453%) hue-rotate(148deg)
+    brightness(91%) contrast(82%);
+  // color: black;
 }
