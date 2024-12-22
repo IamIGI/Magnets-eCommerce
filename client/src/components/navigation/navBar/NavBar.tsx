@@ -1,3 +1,4 @@
+import LanguageMenu from '../languageMenu/LanguageMenu';
 import StyledIcon from '../styledIcon/StyledIcon';
 import StyledLink from '../styledLink/StyledLink';
 import classes from './NavBar.module.scss';
@@ -16,6 +17,7 @@ export const NavBar = () => {
       <div className={classes.icons}>
         <StyledIcon src="svg/media/facebook.svg" alt="fb" />
         <StyledIcon src="svg/media/instagram.svg" alt="ig" />
+        <LanguageMenu />
       </div>
     </nav>
   );
