@@ -1,0 +1,96 @@
+$speed: 0.5s;
+$padding-horizontal: 20px;
+
+.btnFlip {
+  opacity: 1;
+  outline: 0;
+  color: #323237;
+  line-height: 40px;
+  position: relative;
+  text-align: center;
+  letter-spacing: 1px;
+  display: inline-block;
+  text-decoration: none;
+  /* font-family: 'Open Sans'; */
+  text-transform: uppercase;
+  font-size: 1.4rem;
+  cursor: pointer;
+  width: fit-content;
+
+  &:hover {
+    &:after {
+      opacity: 1;
+      transform: translateY(0) rotateX(0);
+    }
+
+    &:before {
+      opacity: 0;
+      transform: translateY(50%) rotateX(90deg);
+    }
+  }
+
+  &:after {
+    top: 0;
+    left: 0;
+    opacity: 0;
+    width: fit-content;
+    color: #323237;
+    display: block;
+    padding: 0 $padding-horizontal;
+    transition: $speed;
+    position: absolute;
+    background: transparent;
+    content: attr(data-back);
+    transform: translateY(-50%) rotateX(90deg);
+    border-bottom: 1px solid gray;
+    text-align: center;
+  }
+
+  &:before {
+    // outline: 1px solid red;
+    top: 0;
+    left: 0;
+    opacity: 1;
+    width: fit-content;
+    color: #323237;
+    display: block;
+    padding: 0 $padding-horizontal;
+    line-height: 40px;
+    transition: $speed;
+    position: relative;
+    background: transparent;
+    content: attr(data-front);
+    transform: translateY(0) rotateX(0);
+    border-bottom: 1px solid transparent;
+    text-align: center;
+  }
+
+  &.scrolled {
+    /* background-color: var(--main-background-color); */
+    color: black;
+
+    &:before {
+      color: black;
+    }
+  }
+
+  @media (max-width: 1400px) {
+    font-size: 1.2rem;
+  }
+
+  @media (max-width: 1200px) {
+    &:before,
+    &:after {
+      text-align: left;
+    }
+  }
+
+  @media (max-width: 550px) {
+    &:before,
+    &:after {
+      text-align: center;
+      font-size: 1.4rem;
+      line-height: 50px;
+    }
+  }
+}

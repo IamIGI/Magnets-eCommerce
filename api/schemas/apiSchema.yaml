@@ -62,16 +62,58 @@ components:
       properties:
         id:
           type: string
-          description: Unique identifier for the product3
+          description: The unique identifier for a product.
         name:
           type: string
-          description: Name of the product
+          description: The name of the product.
         description:
           type: string
-          description: Description of the product
+          description: A detailed description of the product.
+        imgName:
+          type: string
+          description: The name of the image file associated with the product.
+        createDate:
+          type: string
+          format: date-time
+          description: The date and time when the product was created.
+        editDate:
+          type: string
+          format: date-time
+          description: The date and time when the product was last updated.
+        idComments:
+          type: array
+          items:
+            type: string
+          description: An array of comment IDs associated with the product.
         price:
-          type: number
-          description: Price of the product
+          type: object
+          properties:
+            defaultPrice:
+              type: number
+              format: float
+              description: The default price of the product.
+            discountPrice:
+              type: number
+              format: float
+              description: The discounted price of the product, if applicable.
+            editDate:
+              type: string
+              format: date-time
+              description: The date and time when the price was last updated.
+            lowestPrice30day:
+              type: number
+              format: float
+              description: The lowest price of the product in the last 30 days, displayed if there's a discount
+          required:
+            - defaultPrice
+            - editDate
+          description: Price details including default and discounted prices, along with metadata.
         inStock:
           type: boolean
-          description: Availability of the product
+          description: Indicates whether the product is in stock.
+      required:
+        - id
+        - name
+        - price
+        - createDate
+        - editDate
