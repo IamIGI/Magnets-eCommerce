@@ -12,11 +12,15 @@
 
 .logo {
   background-color: transparent;
-
+  transition: 0.2s;
   height: 50px;
   img {
     height: 100%;
     width: 100%;
+  }
+
+  &:hover {
+    scale: 1.1;
   }
 }
 
@@ -31,5 +35,5 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 1rem;
+  gap: 1.5rem;
 }
