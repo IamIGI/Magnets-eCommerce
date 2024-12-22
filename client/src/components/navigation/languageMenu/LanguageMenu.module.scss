@@ -1,12 +1,12 @@
 .wrapper {
-  $size: 50px;
+  //   outline: 1px solid red;
+
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
   position: relative;
   gap: 1rem;
-  //   outline: 1px solid red;
   padding: 0 0.5rem;
 
   button {
@@ -14,12 +14,20 @@
   }
 
   img {
+    $size: 50px;
     width: $size;
     height: $size;
   }
 
   .menu {
     // outline: 1px solid red;
+
+    z-index: 100;
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(-10px); //animation
+    transition: all 0.2s ease-in-out;
+
     width: 100%;
     position: absolute;
     top: 100%; /* Align just below the button */
@@ -34,10 +42,6 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     border-radius: 0.5rem;
     padding: 0 0.2rem;
-    visibility: hidden;
-    opacity: 0;
-    transform: translateY(-10px);
-    transition: all 0.2s ease-in-out;
 
     &.visible {
       visibility: visible;
@@ -47,17 +51,20 @@
 
     ul {
       list-style-type: none;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      //   gap: 0.1rem;
     }
 
     li {
       button {
         background-color: transparent;
       }
+    }
+  }
+
+  @media (max-width: 800px) {
+    img {
+      $size: 55px;
+      width: $size;
+      height: $size;
     }
   }
 }
