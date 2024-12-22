@@ -1,0 +1,54 @@
+:root {
+  --main-border-radius: 10px;
+
+  --font-size-h1: 51px;
+  --font-size-h2: 31px;
+  --font-size-h3: 24px;
+  --font-size-h4: 20px;
+  --font-size-h5: 17px;
+  --font-size-p: 17px;
+  --font-size-li: 17px;
+  --font-size-minV2: 14px;
+  --font-size-footer: 11px;
+
+  --main-background-color: #fbfaf6;
+  --main-second-background-color: #fff;
+  --target-translator-background-color: #f5f5f5;
+
+  --main-button-background-color: #fff;
+  --main-button-background-color-hover: #f5f3f3;
+
+  --main-text-color: #000;
+  --main-second-text-color: #484848;
+  --border-color: #e5e7ec;
+  --scrollbar-background-color-thumb: #c2c2c2;
+  --scrollbar-background-color-thumb-hover: #b3b3b3;
+  /* https://codepen.io/sosuke/pen/Pjoqqp */
+  --icon-color-filter: invert(0%) sepia(10%) saturate(56%) hue-rotate(274deg)
+    brightness(109%) contrast(100%);
+
+  --color-accent-welcome: #db6f34;
+  --color-accent: #7db8c3;
+  --color-filter-accent-welcome: invert(42%) sepia(57%) saturate(837%)
+    hue-rotate(339deg) brightness(92%) contrast(81%);
+  --color-filter-accent: invert(75%) sepia(42%) saturate(286%)
+    hue-rotate(142deg) brightness(86%) contrast(86%);
+  --color-button: rgb(7, 119, 5);
+  --color-button-hover: rgb(7, 137, 5);
+
+  --first-tile-background-color: #232121;
+  --first-font-color: #706e6c;
+  --first-font-title-color: #c3c1c0;
+  --first-icon-color: invert(91%) sepia(7%) saturate(59%) hue-rotate(336deg)
+    brightness(86%) contrast(91%);
+
+  --second-tile-background-color: #edebe8;
+  --second-font-color: #959392;
+  --second-font-title-color: #4f4d4c;
+  --second-icon-color: invert(28%) sepia(8%) saturate(143%) hue-rotate(335deg)
+    brightness(96%) contrast(86%);
+
+  --test: #2b2a29;
+
+  --gap-between-sections: 6rem;
+}
