@@ -11,11 +11,19 @@ body {
 }
 
 body {
-  font-family: Arial, sans-serif;
+  // font-family: Arial, sans-serif;
+  font-weight: 500;
+  font-family: 'Playfair Display';
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--main-background-color);
+}
+
+.app-wrapper {
+  width: 100vw;
+  max-width: 2000px;
+  margin: auto;
 }
 
 img,
@@ -45,6 +53,111 @@ button {
   cursor: pointer;
   outline: none;
   border: none;
+}
+
+h1 {
+  font-size: var(--font-size-h1);
+}
+h2 {
+  font-size: var(--font-size-h2);
+}
+h3 {
+  font-size: var(--font-size-h3);
+  font-weight: 500;
+}
+h4 {
+  font-size: var(--font-size-h4);
+  font-weight: 500;
+}
+h5 {
+  font-size: var(--font-size-h5);
+  // font-weight: 500;
+}
+p {
+  font-size: var(--font-size-p);
+  margin: 0;
+  padding: 0;
+}
+li {
+  font-size: var(--font-size-li);
+}
+
+@media (max-width: 1250px) {
+  h1 {
+    font-size: calc(var(--font-size-h1) - 5px);
+  }
+  h2 {
+    font-size: calc(var(--font-size-h2) - 4px);
+  }
+  h3 {
+    font-size: calc(var(--font-size-h3) - 3px);
+    font-weight: 500;
+  }
+  h4 {
+    font-size: calc(var(--font-size-h4) - 1px);
+    font-weight: 500;
+  }
+  h5 {
+    font-size: var(--font-size-h5);
+    // font-weight: 500;
+  }
+  p {
+    font-size: calc(var(--font-size-p) - 1px);
+    margin: 0;
+    padding: 0;
+  }
+}
+
+@media (max-width: 1000px) {
+  h1 {
+    font-size: calc(var(--font-size-h1) - 8px);
+  }
+  h2 {
+    font-size: calc(var(--font-size-h2) - 6px);
+  }
+  h3 {
+    font-size: calc(var(--font-size-h3) - 4px);
+    font-weight: 500;
+  }
+  h4 {
+    font-size: calc(var(--font-size-h4) - 2px);
+    font-weight: 500;
+  }
+}
+
+@media (max-width: 850px) {
+  h1 {
+    font-size: calc(var(--font-size-h1) - 12px);
+  }
+  h2 {
+    font-size: calc(var(--font-size-h2) - 8px);
+  }
+}
+
+@media (max-width: 550px) {
+  h1 {
+    font-size: calc(var(--font-size-h1) - 17px);
+  }
+  h2 {
+    font-size: calc(var(--font-size-h2) - 10px);
+  }
+  h3 {
+    font-size: calc(var(--font-size-h3) - 5px);
+    font-weight: 500;
+  }
+  h4 {
+    font-size: calc(var(--font-size-h4) - 3px);
+    font-weight: 500;
+  }
+  h5 {
+    font-size: var(--font-size-h5);
+    // font-weight: 500;
+  }
+  p {
+    font-size: calc(var(--font-size-p) - 1px);
+    margin: 0;
+    padding: 0;
+  }
 }
 
 .white-svg-icon {
