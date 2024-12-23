@@ -1,6 +1,7 @@
 import './styles/global.vars.scss';
 import './styles/global.scss';
 import { NavBar } from './components/navigation/navBar/NavBar';
+import Home from './components/templates/home/Home';
 
 // Define the interface
 export interface ToDoObject {
@@ -13,9 +14,9 @@ export interface ToDoObject {
 
 function App() {
   return (
-    <div className="wrapper">
+    <div className="app-wrapper">
       <NavBar />
-      <h1>Home</h1>
+      <Home />
     </div>
   );
 }
