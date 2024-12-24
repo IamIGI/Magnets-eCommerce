@@ -1,13 +1,23 @@
+.navWrapper {
+  z-index: 10;
+  width: 100%;
+  position: sticky;
+  top: 0;
+  background-color: var(--main-background-color);
+  &.scrolled {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+}
+
 .wrapper {
   width: 100%;
   height: var(--navbar-height);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 5%;
+  padding: 1rem 3% 1rem 5%;
   gap: 0.2rem;
   // outline: 1px solid red;
-  background-color: transparent;
 }
 
 .logo {

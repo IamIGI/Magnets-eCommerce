@@ -1,7 +1,5 @@
 .wrapper {
   // outline: 1px solid red;
-  z-index: 10;
-
   visibility: hidden;
   opacity: 0;
   transform: translateY(-10px); //animation
@@ -40,7 +38,7 @@
   }
 
   @media (max-width: 550px) {
-    height: 100%;
+    height: 100vh;
     align-items: center;
     padding: 1rem;
   }
@@ -56,7 +54,6 @@
   @media (max-width: 550px) {
     width: 100%;
     gap: 1rem;
-    padding-top: 20%;
     padding-bottom: 10%;
   }
 }
