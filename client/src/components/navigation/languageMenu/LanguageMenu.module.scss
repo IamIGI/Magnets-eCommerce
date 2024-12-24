@@ -14,7 +14,7 @@
   }
 
   img {
-    $size: 50px;
+    $size: 40px;
     width: $size;
     height: $size;
   }
@@ -62,7 +62,7 @@
 
   @media (max-width: 800px) {
     img {
-      $size: 55px;
+      $size: 35px;
       width: $size;
       height: $size;
     }
