@@ -21,7 +21,7 @@ body {
 }
 
 .app-wrapper {
-  width: 100vw;
+  width: 100%;
   max-width: 2000px;
   margin: auto;
 }
@@ -154,7 +154,7 @@ li {
     // font-weight: 500;
   }
   p {
-    font-size: calc(var(--font-size-p) - 1px);
+    font-size: calc(var(--font-size-p) - 2px);
     margin: 0;
     padding: 0;
   }

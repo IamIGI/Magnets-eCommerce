@@ -4,10 +4,9 @@
   justify-content: flex-start;
   align-items: center;
   gap: 0.5rem;
-  $widthSize: 300px;
-  width: $widthSize;
-  max-width: $widthSize;
+  width: 300px;
   cursor: pointer;
+  transition: 0.2s;
   // border-bottom: 1px solid black;
 
   .imageWrapper {
@@ -42,5 +41,17 @@
       font-weight: 600;
       color: var(--main-second-text-color);
     }
+
+    @media (max-width: 550px) {
+      padding-left: 0px;
+    }
+  }
+
+  @media (max-width: 750px) {
+    width: 200px;
+  }
+
+  @media (max-width: 550px) {
+    width: 150px;
   }
 }

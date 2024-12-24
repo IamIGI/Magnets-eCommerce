@@ -5,6 +5,10 @@
   justify-content: flex-start;
   align-items: center;
   gap: 2rem;
+
+  @media (max-width: 550px) {
+    gap: 1rem;
+  }
 }
 
 .productListWrapper {
@@ -13,4 +17,8 @@
   align-items: center;
   gap: 2rem;
   flex-wrap: wrap;
+
+  @media (max-width: 550px) {
+    gap: 1rem;
+  }
 }
