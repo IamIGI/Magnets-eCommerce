@@ -11,7 +11,7 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({ isVisible }) => {
   return (
     <div className={`${classes.wrapper} ${isVisible ? classes.visible : ''}`}>
       <div className={classes.links}>
-        <MenuLinks />
+        <MenuLinks mobileMenu={true} />
       </div>
       <div className={classes.icons}>
         <MenuIcons mobileMenu={true} />

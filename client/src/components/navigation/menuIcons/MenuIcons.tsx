@@ -7,9 +7,15 @@ const MenuIcons: React.FC<{ mobileMenu?: boolean }> = ({
 }) => {
   return (
     <>
-      <StyledIcon src="svg/media/facebook.svg" alt="fb" />
-      <StyledIcon src="svg/media/instagram.svg" alt="ig" />
-      {!mobileMenu && <LanguageMenu />}
+      <StyledIcon src="svg/media/facebook.svg" alt="fb" size="30px" />
+      <StyledIcon src="svg/media/instagram.svg" alt="ig" size="30px" />
+      {!mobileMenu && (
+        <>
+          <StyledIcon src="svg/buttons/user.svg" alt="user" size="30px" />
+          <StyledIcon src="svg/buttons/basket.svg" alt="basket" size="30px" />
+          <LanguageMenu />
+        </>
+      )}
     </>
   );
 };
