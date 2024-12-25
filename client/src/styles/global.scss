@@ -55,6 +55,12 @@ button {
   border: none;
 }
 
+ul,
+li {
+  text-decoration: none;
+  list-style-type: none;
+}
+
 h1 {
   font-size: var(--font-size-h1);
 }
@@ -142,7 +148,7 @@ li {
     font-size: calc(var(--font-size-h2) - 10px);
   }
   h3 {
-    font-size: calc(var(--font-size-h3) - 5px);
+    font-size: calc(var(--font-size-h3) - 7px);
     font-weight: 500;
   }
   h4 {

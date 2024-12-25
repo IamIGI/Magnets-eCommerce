@@ -68,11 +68,11 @@ export const NavBar = () => {
         </button>
         <div className={classes.mobileNavbar}>
           <LanguageMenu />
-          <StyledIcon src="svg/buttons/basket2.svg" alt="basket" size="35px" />
+          <StyledIcon src="svg/buttons/basket2.svg" alt="basket" size="30px" />
           <StyledIcon
             src="svg/buttons/hamburger.svg"
             alt="Hamburger menu"
-            size="40px"
+            size="35px"
             handleClick={toggleMobileMenuVisible}
           />
         </div>

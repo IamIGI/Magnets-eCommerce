@@ -18,13 +18,18 @@
   padding: 1rem 3% 1rem 5%;
   gap: 0.2rem;
   // outline: 1px solid red;
+
+  @media (max-width: 550px) {
+    height: calc(var(--navbar-height) - 20px);
+  }
 }
 
 .logo {
   background-color: transparent;
   transition: 0.2s;
-  height: 50px;
-  width: 50px;
+  $logoSize: 50px;
+  height: $logoSize;
+  width: $logoSize;
   img {
     height: 100%;
     width: 100%;
@@ -32,6 +37,12 @@
 
   &:hover {
     scale: 1.1;
+  }
+
+  @media (max-width: 550px) {
+    $logoSize: 40px;
+    height: $logoSize;
+    width: $logoSize;
   }
 }
 

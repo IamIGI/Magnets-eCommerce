@@ -41,6 +41,8 @@
     height: 100vh;
     align-items: center;
     padding: 1rem;
+
+    top: calc(var(--navbar-height) - 20px);
   }
 }
 
