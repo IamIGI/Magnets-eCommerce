@@ -67,4 +67,12 @@
       height: $size;
     }
   }
+
+  @media (max-width: 550px) {
+    img {
+      $size: 30px;
+      width: $size;
+      height: $size;
+    }
+  }
 }
