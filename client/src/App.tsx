@@ -3,6 +3,7 @@ import './styles/global.scss';
 import { NavBar } from './components/navigation/navBar/NavBar';
 import Home from './components/templates/home/Home';
 import Footer from './components/footer/Footer';
+import ProductItem from './components/templates/productItem/ProductItem';
 
 // Define the interface
 export interface ToDoObject {
@@ -17,7 +18,8 @@ function App() {
   return (
     <div className="app-wrapper">
       <NavBar />
-      <Home />
+      {/* <Home /> */}
+      <ProductItem />
       <Footer />
     </div>
   );

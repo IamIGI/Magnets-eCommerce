@@ -25,7 +25,7 @@ const Footer = () => {
         <div className={c.column}>
           <h3>CONTACT</h3>
           <ul>
-            <li>Kraków, Promienistych 2</li>
+            <li>Kraków, Purdniecie 2/50</li>
             <li>magnetsBusiness@gmail.com</li>
             <li>NIP: 1231231239</li>
           </ul>
