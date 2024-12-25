@@ -1,0 +1,65 @@
+.wrapper {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  gap: 1rem;
+}
+
+.thumbnailColumn {
+  display: flex;
+  flex-direction: column;
+  width: 20%;
+}
+
+.thumbnail {
+  width: 100%;
+  max-width: 100px;
+  max-height: 85px;
+  cursor: pointer;
+  margin-bottom: 10px;
+  transition: transform 0.2s;
+}
+
+.thumbnail.selected {
+  transform: scale(1.1);
+}
+
+.mainImageColumn {
+  width: 80%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.mainImage {
+  width: 90%;
+  max-width: 600px;
+  max-height: 675px;
+  height: auto;
+}
+
+// @media (max-width: 768px) {
+//   .wrapper {
+//     flex-direction: column;
+//   }
+
+//   .thumbnailColumn {
+//     flex-direction: row;
+//     width: 100%;
+//     overflow-x: auto;
+//   }
+
+//   .thumbnail {
+//     width: auto;
+//     height: 100px;
+//     margin-right: 10px;
+//   }
+
+//   .mainImageColumn {
+//     width: 100%;
+//   }
+
+//   .mainImage {
+//     width: 100%;
+//   }
+// }
