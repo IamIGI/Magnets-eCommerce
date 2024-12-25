@@ -58,16 +58,21 @@
 
   @media (max-width: 550px) {
     justify-content: center;
+    padding: 1rem 4%;
   }
 }
 
 .rights {
   width: 100%;
   text-align: center;
-  padding: 1rem 4% 1rem 4%;
+  padding: 1rem 4%;
   border-top: 1px solid var(--first-font-color);
   p {
     font-size: 12px;
     color: var(--first-font-color);
+  }
+
+  @media (max-width: 550px) {
+    padding: 0.6rem 4%;
   }
 }
