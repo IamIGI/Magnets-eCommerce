@@ -1,3 +1,4 @@
+import { NavLink } from 'react-router-dom';
 import classes from './StyledLink.module.scss';
 
 interface LinkProps {
@@ -7,11 +8,11 @@ interface LinkProps {
 
 const StyledLink = ({ name, url }: LinkProps) => {
   return (
-    <a
+    <NavLink
+      to={url}
       className={classes.btnFlip}
       data-back={name}
       data-front={name}
-      href={url}
     />
   );
 };

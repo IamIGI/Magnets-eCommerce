@@ -6,12 +6,14 @@ import LanguageMenu from '../languageMenu/LanguageMenu';
 import StyledIcon from '../styledIcon/StyledIcon';
 import { useToggleState } from '../../../hooks/useToggleState';
 import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export const NavBar = () => {
   const [isMobileMenuVisible, toggleMobileMenuVisible, setMobileMenuVisible] =
     useToggleState(false);
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -63,7 +65,7 @@ export const NavBar = () => {
       className={`${classes.navWrapper} ${isScrolled ? classes.scrolled : ''}`}
     >
       <nav className={classes.wrapper}>
-        <button className={classes.logo}>
+        <button className={classes.logo} onClick={() => navigate('/')}>
           <img src="/logo/logo_black-no_background.png" alt="Logo" />
         </button>
         <div className={classes.mobileNavbar}>
