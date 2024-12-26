@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import c from './productImageGallery.module.scss';
+import c from './ProductImageGallery.module.scss';
 
 interface ImageGalleryProps {
   imgSrc: string[];
