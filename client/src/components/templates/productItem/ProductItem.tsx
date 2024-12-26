@@ -1,5 +1,6 @@
+import ProductContent from '../../productItem/productContent/ProductContent';
+import ProductImageGallery from '../../productItem/productImageGallery/ProductImageGallery';
 import c from './ProductItem.module.scss';
-import ProductImageGallery from '../../products/productImageGallery/productImageGallery';
 
 const ProductItem = () => {
   return (
@@ -13,7 +14,9 @@ const ProductItem = () => {
           ]}
         />
       </div>
-      <div className={c.productContentWrapper}></div>
+      <div className={c.productContentWrapper}>
+        <ProductContent />
+      </div>
     </div>
   );
 };
