@@ -5,13 +5,17 @@ import classes from './MobileNavigation.module.scss';
 
 interface MobileNavigationProps {
   isVisible: boolean;
+  handleLinkClick: () => void;
 }
 
-const MobileNavigation: React.FC<MobileNavigationProps> = ({ isVisible }) => {
+const MobileNavigation: React.FC<MobileNavigationProps> = ({
+  isVisible,
+  handleLinkClick,
+}) => {
   return (
     <div className={`${classes.wrapper} ${isVisible ? classes.visible : ''}`}>
       <div className={classes.links}>
-        <MenuLinks mobileMenu={true} />
+        <MenuLinks mobileMenu={true} handleClick={handleLinkClick} />
       </div>
       <div className={classes.icons}>
         <MenuIcons mobileMenu={true} />

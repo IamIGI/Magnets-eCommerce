@@ -7,6 +7,7 @@ import StyledIcon from '../styledIcon/StyledIcon';
 import { useToggleState } from '../../../hooks/useToggleState';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { NavigationLinks } from '../../views/Root';
 
 export const NavBar = () => {
   const [isMobileMenuVisible, toggleMobileMenuVisible, setMobileMenuVisible] =
@@ -59,13 +60,24 @@ export const NavBar = () => {
     };
   }, [isMobileMenuVisible]);
 
+  function handleMenuLinkClick() {
+    console.log('handleMenuLinkClick');
+    if (isMobileMenuVisible) setMobileMenuVisible(false);
+  }
+
+  function handleLogoCLick() {
+    navigate(NavigationLinks.Home);
+
+    if (isMobileMenuVisible) setMobileMenuVisible(false);
+  }
+
   return (
     <div
       ref={mobileMenuRef}
       className={`${classes.navWrapper} ${isScrolled ? classes.scrolled : ''}`}
     >
       <nav className={classes.wrapper}>
-        <button className={classes.logo} onClick={() => navigate('/')}>
+        <button className={classes.logo} onClick={handleLogoCLick}>
           <img src="/logo/logo_black-no_background.png" alt="Logo" />
         </button>
         <div className={classes.mobileNavbar}>
@@ -79,13 +91,16 @@ export const NavBar = () => {
           />
         </div>
         <div className={classes.links}>
-          <MenuLinks />
+          <MenuLinks handleClick={handleMenuLinkClick} />
         </div>
         <div className={classes.icons}>
           <MenuIcons />
         </div>
       </nav>
-      <MobileNavigation isVisible={isMobileMenuVisible} />
+      <MobileNavigation
+        isVisible={isMobileMenuVisible}
+        handleLinkClick={handleMenuLinkClick}
+      />
     </div>
   );
 };
