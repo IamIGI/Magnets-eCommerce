@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import classes from './ProductTile.module.scss';
+import c from './ProductTile.module.scss';
 import { NavigationLinks } from '../../views/Root';
 
 interface ProductTileProps {
@@ -17,15 +17,15 @@ const ProductTile: React.FC<ProductTileProps> = ({
   // img: 275x325 size (wXh)
   return (
     <div
-      className={classes.wrapper}
+      className={c.wrapper}
       onClick={() => navigate(NavigationLinks.ProductItem)}
     >
-      <div className={classes.imageWrapper}>
+      <div className={c.imageWrapper}>
         <img src={imageSrc} />
       </div>
-      <div className={classes.content}>
+      <div className={c.content}>
         <p>{title}</p>
-        <p className={classes.price}>{price} zł</p>
+        <p className={c.price}>{price} zł</p>
       </div>
     </div>
   );

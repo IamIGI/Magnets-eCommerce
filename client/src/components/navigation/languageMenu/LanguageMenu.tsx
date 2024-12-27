@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import classes from './LanguageMenu.module.scss';
+import c from './LanguageMenu.module.scss';
 import { useToggleState } from '../../../hooks/useToggleState';
 
 const LanguageMenu = () => {
@@ -26,13 +26,11 @@ const LanguageMenu = () => {
   }, []);
 
   return (
-    <div className={classes.wrapper} ref={menuRef}>
+    <div className={c.wrapper} ref={menuRef}>
       <button onClick={handleLangChange}>
         <img src="svg/lang/poland.svg" alt="pl-lang" />
       </button>
-      <div
-        className={`${classes.menu} ${menuVisibility ? classes.visible : ''}`}
-      >
+      <div className={`${c.menu} ${menuVisibility ? c.visible : ''}`}>
         <ul>
           <li>
             <button onClick={handleLangChange}>

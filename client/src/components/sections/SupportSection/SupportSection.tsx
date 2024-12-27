@@ -1,4 +1,4 @@
-import classes from './SupportSection.module.scss';
+import c from './SupportSection.module.scss';
 
 const SupportSection = () => {
   const items = [
@@ -22,9 +22,9 @@ const SupportSection = () => {
     },
   ];
   return (
-    <div className={classes.wrapper}>
+    <div className={c.wrapper}>
       {items.map((item) => (
-        <div className={classes.itemWrapper} key={item.id}>
+        <div className={c.itemWrapper} key={item.id}>
           <img src={`svg/support/${item.imgName}`} alt={item.title} />
           <h2>{item.title}</h2>
           <p>{item.desc}</p>

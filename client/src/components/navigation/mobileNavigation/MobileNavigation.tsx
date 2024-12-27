@@ -1,7 +1,7 @@
 import MenuIcons from '../menuIcons/MenuIcons';
 import MenuLinks from '../menuLinks/MenuLinks';
 
-import classes from './MobileNavigation.module.scss';
+import c from './MobileNavigation.module.scss';
 
 interface MobileNavigationProps {
   isVisible: boolean;
@@ -13,11 +13,11 @@ const MobileNavigation: React.FC<MobileNavigationProps> = ({
   handleLinkClick,
 }) => {
   return (
-    <div className={`${classes.wrapper} ${isVisible ? classes.visible : ''}`}>
-      <div className={classes.links}>
+    <div className={`${c.wrapper} ${isVisible ? c.visible : ''}`}>
+      <div className={c.links}>
         <MenuLinks mobileMenu={true} handleClick={handleLinkClick} />
       </div>
-      <div className={classes.icons}>
+      <div className={c.icons}>
         <MenuIcons mobileMenu={true} />
       </div>
     </div>

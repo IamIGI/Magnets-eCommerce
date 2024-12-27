@@ -23,15 +23,15 @@
     font-family: Arial, Helvetica, sans-serif;
     padding: 3px 8px;
     background-color: transparent;
-    border: 1px solid #262522;
+    border: 1px solid #383733;
     transition: all 0.2s;
 
     &:hover {
-      outline: 1px solid #262522;
+      outline: 1px solid #383733;
     }
   }
   .buttonSelected {
-    background-color: #262522;
+    background-color: #383733;
     color: #e0dbdb;
   }
 }

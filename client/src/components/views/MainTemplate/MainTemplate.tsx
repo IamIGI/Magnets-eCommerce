@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 import { NavBar } from '../../navigation/navBar/NavBar';
-import Footer from '../../footer/Footer';
+import Footer from '../../sections/footer/Footer';
 import { BrowserRouter } from 'react-router-dom';
 
 const MainTemplate: React.FC<{ children: ReactNode }> = ({ children }) => {

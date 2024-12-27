@@ -1,9 +1,9 @@
-import classes from './NavBar.module.scss';
+import c from './NavBar.module.scss';
 import MobileNavigation from '../mobileNavigation/MobileNavigation';
 import MenuLinks from '../menuLinks/MenuLinks';
 import MenuIcons from '../menuIcons/MenuIcons';
 import LanguageMenu from '../languageMenu/LanguageMenu';
-import StyledIcon from '../styledIcon/StyledIcon';
+import StyledIcon from '../../ui/styledIcon/StyledIcon';
 import { useToggleState } from '../../../hooks/useToggleState';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -74,13 +74,13 @@ export const NavBar = () => {
   return (
     <div
       ref={mobileMenuRef}
-      className={`${classes.navWrapper} ${isScrolled ? classes.scrolled : ''}`}
+      className={`${c.navWrapper} ${isScrolled ? c.scrolled : ''}`}
     >
-      <nav className={classes.wrapper}>
-        <button className={classes.logo} onClick={handleLogoCLick}>
+      <nav className={c.wrapper}>
+        <button className={c.logo} onClick={handleLogoCLick}>
           <img src="/logo/logo_black-no_background.png" alt="Logo" />
         </button>
-        <div className={classes.mobileNavbar}>
+        <div className={c.mobileNavbar}>
           <LanguageMenu />
           <StyledIcon src="svg/buttons/basket2.svg" alt="basket" size="30px" />
           <StyledIcon
@@ -90,10 +90,10 @@ export const NavBar = () => {
             handleClick={toggleMobileMenuVisible}
           />
         </div>
-        <div className={classes.links}>
+        <div className={c.links}>
           <MenuLinks handleClick={handleMenuLinkClick} />
         </div>
-        <div className={classes.icons}>
+        <div className={c.icons}>
           <MenuIcons />
         </div>
       </nav>

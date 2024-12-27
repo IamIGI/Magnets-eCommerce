@@ -1,5 +1,5 @@
 import React from 'react';
-import StyledIcon from '../styledIcon/StyledIcon';
+import StyledIcon from '../../ui/styledIcon/StyledIcon';
 import LanguageMenu from '../languageMenu/LanguageMenu';
 
 const MenuIcons: React.FC<{ mobileMenu?: boolean }> = ({

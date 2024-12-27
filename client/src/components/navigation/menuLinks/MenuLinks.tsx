@@ -1,5 +1,5 @@
 import { NavigationLinks } from '../../views/Root';
-import StyledLink from '../styledLink/StyledLink';
+import StyledLink from '../../ui/styledLink/StyledLink';
 
 interface MenuLinksInterface {
   mobileMenu?: boolean;

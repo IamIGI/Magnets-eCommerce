@@ -1,4 +1,4 @@
-import classes from './HorizontalLine.module.scss';
+import c from './HorizontalLine.module.scss';
 
 interface HorizontalLineProps {
   width?: string;
@@ -6,10 +6,7 @@ interface HorizontalLineProps {
 
 const HorizontalLine: React.FC<HorizontalLineProps> = ({ width }) => {
   return (
-    <p
-      className={classes.horizontalLine}
-      style={width ? { width: width } : {}}
-    ></p>
+    <p className={c.horizontalLine} style={width ? { width: width } : {}}></p>
   );
 };
 

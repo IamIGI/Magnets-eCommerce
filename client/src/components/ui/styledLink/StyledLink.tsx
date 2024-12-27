@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import classes from './StyledLink.module.scss';
+import c from './StyledLink.module.scss';
 
 interface LinkProps {
   name: string;
@@ -11,7 +11,7 @@ const StyledLink = ({ name, url, handleClick }: LinkProps) => {
   return (
     <NavLink
       to={url}
-      className={classes.btnFlip}
+      className={c.btnFlip}
       data-back={name}
       data-front={name}
       onClick={handleClick}

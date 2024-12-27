@@ -1,5 +1,5 @@
-import HorizontalLine from '../horizontalLine/HorizontalLine';
-import classes from './SectionTitle.module.scss';
+import HorizontalLine from '../../ui/horizontalLine/HorizontalLine';
+import c from './SectionTitle.module.scss';
 
 interface SectionTitleProps {
   title: string;
@@ -7,8 +7,8 @@ interface SectionTitleProps {
 }
 const SectionTitle: React.FC<SectionTitleProps> = ({ title, description }) => {
   return (
-    <div className={classes.descriptionContent}>
-      <div className={classes.title}>
+    <div className={c.descriptionContent}>
+      <div className={c.title}>
         <HorizontalLine width="10vw" />
         <h2>{title}</h2>
       </div>
