@@ -2,7 +2,13 @@ import React from 'react';
 import StyledIcon from '../../ui/styledIcon/StyledIcon';
 import LanguageMenu from '../languageMenu/LanguageMenu';
 
-const MenuIcons: React.FC<{ mobileMenu?: boolean }> = ({
+interface MenuIconsProps {
+  onCartClick: () => void;
+  mobileMenu?: boolean;
+}
+
+const MenuIcons: React.FC<MenuIconsProps> = ({
+  onCartClick,
   mobileMenu = false,
 }) => {
   return (
@@ -12,7 +18,12 @@ const MenuIcons: React.FC<{ mobileMenu?: boolean }> = ({
       {!mobileMenu && (
         <>
           <StyledIcon src="svg/buttons/user.svg" alt="user" size="30px" />
-          <StyledIcon src="svg/buttons/basket.svg" alt="basket" size="30px" />
+          <StyledIcon
+            src="svg/buttons/basket.svg"
+            alt="basket"
+            size="30px"
+            handleClick={onCartClick}
+          />
           <LanguageMenu />
         </>
       )}

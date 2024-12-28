@@ -1,0 +1,16 @@
+.wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5rem 0;
+  border: 1px solid #262522;
+  cursor: pointer;
+  transition: all 0.2s;
+  background-color: #85b395;
+
+  &:hover {
+    background-color: #262522;
+    color: #e0dbdb;
+  }
+}

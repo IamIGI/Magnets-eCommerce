@@ -9,7 +9,11 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { NavigationLinks } from '../../views/Root';
 
-export const NavBar = () => {
+export interface NavBarProps {
+  handleCartClick: () => void;
+}
+
+export const NavBar: React.FC<NavBarProps> = ({ handleCartClick }) => {
   const [isMobileMenuVisible, toggleMobileMenuVisible, setMobileMenuVisible] =
     useToggleState(false);
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
@@ -82,7 +86,15 @@ export const NavBar = () => {
         </button>
         <div className={c.mobileNavbar}>
           <LanguageMenu />
-          <StyledIcon src="svg/buttons/basket2.svg" alt="basket" size="30px" />
+          <StyledIcon
+            src="svg/buttons/basket2.svg"
+            alt="basket"
+            size="30px"
+            handleClick={() => {
+              console.log('t1');
+              handleCartClick();
+            }}
+          />
           <StyledIcon
             src="svg/buttons/hamburger.svg"
             alt="Hamburger menu"
@@ -94,7 +106,7 @@ export const NavBar = () => {
           <MenuLinks handleClick={handleMenuLinkClick} />
         </div>
         <div className={c.icons}>
-          <MenuIcons />
+          <MenuIcons onCartClick={handleCartClick} />
         </div>
       </nav>
       <MobileNavigation

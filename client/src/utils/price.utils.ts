@@ -1,15 +1,15 @@
+import { ListItem } from '../interfaces/cart';
+
 function calculatePrice(
-  SIZES: {
-    id: string;
-    desc: string;
-    price: number;
-  }[],
+  SIZES_ARR: ListItem[],
+  QUANTITY_ARR: ListItem[],
   sizeId: string,
-  quantity: number
+  quantityId: string
 ) {
-  const sizePrice = SIZES.find((s) => s.id === sizeId)?.price;
-  if (sizePrice) {
-    return sizePrice * quantity;
+  const sizePrice = SIZES_ARR.find((s) => s.id === sizeId)?.price;
+  const quantityValue = QUANTITY_ARR.find((q) => q.id === quantityId)?.desc;
+  if (sizePrice && quantityValue) {
+    return sizePrice * Number(quantityValue);
   }
   return 0;
 }

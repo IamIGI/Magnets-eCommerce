@@ -23,7 +23,7 @@ const LanguageMenu = () => {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, []);
+  });
 
   return (
     <div className={c.wrapper} ref={menuRef}>
@@ -32,16 +32,13 @@ const LanguageMenu = () => {
       </button>
       <div className={`${c.menu} ${menuVisibility ? c.visible : ''}`}>
         <ul>
-          <li>
-            <button onClick={handleLangChange}>
-              <img src="svg/lang/ukraine.svg" alt="ua-lang" />
-            </button>
-          </li>
-          <li>
-            <button onClick={handleLangChange}>
-              <img src="svg/lang/english.svg" alt="en-lang" />
-            </button>
-          </li>
+          {['ukraine.svg', 'english.svg'].map((lang) => (
+            <li key={lang}>
+              <button onClick={handleLangChange}>
+                <img src={`svg/lang/${lang}`} alt="lang" />
+              </button>
+            </li>
+          ))}
         </ul>
       </div>
     </div>

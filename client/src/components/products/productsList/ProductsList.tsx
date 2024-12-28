@@ -1,4 +1,4 @@
-import { productsList } from '../../../mocks/productsList';
+import { productsList } from '../../../mocks/PRODUCTS_MOCKS';
 import SectionTitle from '../../sections/sectionTitle/SectionTitle';
 import ProductTile from '../productTile/ProductTile';
 import c from './ProductsList.module.scss';
