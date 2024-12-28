@@ -156,8 +156,30 @@ li {
     font-size: calc(var(--font-size-h4) - 3px);
     font-weight: 500;
   }
+  p {
+    font-size: calc(var(--font-size-p) - 2px);
+    margin: 0;
+    padding: 0;
+  }
+}
+
+@media (max-width: 385px) {
+  h1 {
+    font-size: calc(var(--font-size-h1) - 18px);
+  }
+  h2 {
+    font-size: calc(var(--font-size-h2) - 11px);
+  }
+  h3 {
+    font-size: calc(var(--font-size-h3) - 8px);
+    font-weight: 500;
+  }
+  h4 {
+    font-size: calc(var(--font-size-h4) - 4px);
+    font-weight: 500;
+  }
   h5 {
-    font-size: var(--font-size-h5);
+    font-size: var(--font-size-h5) - 1px;
     // font-weight: 500;
   }
   p {

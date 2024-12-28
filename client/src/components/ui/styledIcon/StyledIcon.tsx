@@ -12,10 +12,7 @@ const StyledIcon = ({ src, alt, handleClick, size }: StyledIconProps) => {
     <button
       className={`${c.wrapper} black-svg-icon`}
       style={size ? { height: size, width: size } : {}}
-      onClick={() => {
-        console.log('t2');
-        if (handleClick) handleClick();
-      }}
+      onClick={handleClick}
     >
       <img src={src} alt={alt} />
     </button>
