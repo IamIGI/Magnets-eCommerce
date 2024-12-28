@@ -90,10 +90,7 @@ export const NavBar: React.FC<NavBarProps> = ({ handleCartClick }) => {
             src="svg/buttons/basket2.svg"
             alt="basket"
             size="30px"
-            handleClick={() => {
-              console.log('t1');
-              handleCartClick();
-            }}
+            handleClick={handleCartClick}
           />
           <StyledIcon
             src="svg/buttons/hamburger.svg"
