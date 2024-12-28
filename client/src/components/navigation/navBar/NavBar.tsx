@@ -64,8 +64,8 @@ export const NavBar: React.FC<NavBarProps> = ({ handleCartClick }) => {
     };
   }, [isMobileMenuVisible]);
 
-  function handleMenuLinkClick() {
-    console.log('handleMenuLinkClick');
+  function handleCloseMenu() {
+    console.log('handleCloseMenu');
     if (isMobileMenuVisible) setMobileMenuVisible(false);
   }
 
@@ -103,7 +103,7 @@ export const NavBar: React.FC<NavBarProps> = ({ handleCartClick }) => {
           />
         </div>
         <div className={c.links}>
-          <MenuLinks handleClick={handleMenuLinkClick} />
+          <MenuLinks handleClick={handleCloseMenu} />
         </div>
         <div className={c.icons}>
           <MenuIcons onCartClick={handleCartClick} />
@@ -111,7 +111,7 @@ export const NavBar: React.FC<NavBarProps> = ({ handleCartClick }) => {
       </nav>
       <MobileNavigation
         isVisible={isMobileMenuVisible}
-        handleLinkClick={handleMenuLinkClick}
+        handleClick={handleCloseMenu}
       />
     </div>
   );

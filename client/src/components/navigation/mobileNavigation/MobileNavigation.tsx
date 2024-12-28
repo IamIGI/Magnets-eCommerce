@@ -5,20 +5,20 @@ import c from './MobileNavigation.module.scss';
 
 interface MobileNavigationProps {
   isVisible: boolean;
-  handleLinkClick: () => void;
+  handleClick: () => void;
 }
 
 const MobileNavigation: React.FC<MobileNavigationProps> = ({
   isVisible,
-  handleLinkClick,
+  handleClick,
 }) => {
   return (
     <div className={`${c.wrapper} ${isVisible ? c.visible : ''}`}>
       <div className={c.links}>
-        <MenuLinks mobileMenu={true} handleClick={handleLinkClick} />
+        <MenuLinks mobileMenu={true} handleClick={handleClick} />
       </div>
       <div className={c.icons}>
-        <MenuIcons mobileMenu={true} />
+        <MenuIcons mobileMenu={true} onCartClick={handleClick} />
       </div>
     </div>
   );
