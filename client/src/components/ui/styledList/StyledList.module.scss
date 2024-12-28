@@ -1,0 +1,115 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 1rem;
+  position: relative;
+
+  text-align: left;
+  font-family: Arial, Helvetica, sans-serif;
+  min-width: 70px;
+  width: fit-content;
+  // outline: 1px solid red;
+
+  .selectedWrapper {
+    width: 100%;
+    display: flex;
+
+    button {
+      width: 100%;
+      // outline: 1px solid red;
+      padding: 0 0.2rem 0 0;
+      border-bottom: 1px solid black;
+      background-color: transparent;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      &.selectedIsOpen {
+        border-bottom: 1px solid rgb(207, 204, 204);
+        border-bottom-width: thin;
+      }
+      img {
+        // outline: 1px solid blue;
+        height: 20px;
+        width: auto;
+      }
+    }
+  }
+
+  .menu {
+    // outline: 1px solid red;
+
+    z-index: 100;
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(-10px); //animation
+    transition: all 0.2s ease-in-out;
+
+    width: 100%;
+    position: absolute;
+    top: 100%; /* Align just below the button */
+    left: 0;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+
+    background-color: var(--main-background-color);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    // padding: 0 0.2rem;
+    border-bottom: 1px solid gray;
+    border-left: 1px solid gray;
+    border-right: 1px solid gray;
+
+    &.visible {
+      visibility: visible;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    ul {
+      width: 100%;
+      list-style-type: none;
+    }
+
+    li {
+      width: 100%;
+      button {
+        background-color: transparent;
+        width: 100%;
+        // outline: 1px solid red;
+        display: flex;
+        justify-content: flex-start;
+        text-align: center;
+        // align-items: center;
+        padding-left: 0.5rem;
+        &:hover {
+          background-color: var(--main-button-background-color-hover);
+        }
+      }
+      // &:not(:last-child) {
+      // border-bottom: 1px solid #000;
+      // }
+    }
+  }
+
+  // @media (max-width: 800px) {
+  //   img {
+  //     $size: 35px;
+  //     width: $size;
+  //     height: $size;
+  //   }
+  // }
+
+  // @media (max-width: 550px) {
+  //   img {
+  //     $size: 30px;
+  //     width: $size;
+  //     height: $size;
+  //   }
+  // }
+}
