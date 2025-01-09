@@ -1,12 +1,13 @@
-import path from 'path';
-import express, { Request, Response } from 'express';
 import dotenv from 'dotenv';
+//Load env variables -- have to be before imports, that could use this env variables
+dotenv.config();
+
+import path from 'path';
+import express, { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
-import connectDB from './config/dbConnection';
+import connectDB from './config/MongoDBConfig';
 import corsOptions from './config/corsOptions';
-
-dotenv.config();
 
 const PORT = process.env.PORT || 4000;
 
@@ -20,8 +21,17 @@ app.use(cors(corsOptions));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
+app.use((req: Request, res: Response, next: NextFunction) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  next();
+});
+
 //ApiRoutes
 app.use('/todolist', require('./routes/api/todoList'));
+app.use('/products', require('./routes/api/products.route'));
+app.use('/prices-sizes', require('./routes/api/pricesAndSizes.route'));
+app.use('/product-categories', require('./routes/api/productCategories.route'));
+// app.use('/prices', require('./routes/api/prices.route'));
 
 // handle UNKNOWN URL REQUESTS
 app.all('*', (req: Request, res: Response) => {
