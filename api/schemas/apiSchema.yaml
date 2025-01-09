@@ -8,10 +8,20 @@ servers:
     description: Development server
   - url: https://api.igitest.pl
     description: Production server
+tags:
+  - name: Products
+    description: Endpoints related to product management, including creating, updating, and deleting products.
+  - name: Product Categories
+    description: Endpoints related to managing product categories, such as adding, retrieving, and updating them.
+  - name: Product and Sizes
+    description: Endpoints related to managing product prices and sizes. Each sizes have own price
 
 paths:
+  # ------------------------- Products requests ---------------
   /products:
     get:
+      tags:
+        - Products
       summary: Get a list of products
       responses:
         '200':
@@ -23,6 +33,8 @@ paths:
                 items:
                   $ref: '#/components/schemas/Product'
     post:
+      tags:
+        - Products
       summary: Create a new product
       requestBody:
         description: Product object to be added
@@ -30,13 +42,41 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Product'
+              allOf:
+                - $ref: '#/components/schemas/Product'
+                - type: object
+                  required:
+                    - name
+                    - description
+                    - category
+                    - imgName
+                    - isImageUploaded
+                    - isRemoved
+                    - pricesAndSizesz
+            example:
+              name: 'Custom Magnet'
+              description: 'A customizable fridge magnet.'
+              category: 'custom'
+              imgName: 'magnet12345.png'
+              isImageUploaded: true
+              isRemoved: true
+              dimensions:
+                - id: '6.8x6.8'
+                  desc: '6,8 x 6,8 cm'
+                  price: 2.9
+                  category: 'custom'
+                - id: '9.5x6.8'
+                  desc: '9,5 x 6,8 cm'
+                  price: 5.0
+                  category: 'custom'
       responses:
         '201':
           description: Product created successfully
 
   /products/{id}:
     get:
+      tags:
+        - Products
       summary: Get a product by ID
       parameters:
         - name: id
@@ -54,11 +94,223 @@ paths:
                 $ref: '#/components/schemas/Product'
         '404':
           description: Product not found
+    put:
+      tags:
+        - Products
+      summary: Update a product
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The product ID
+      requestBody:
+        description: Product object to be updated.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      responses:
+        '200':
+          description: Product updated successfully
+        '404':
+          description: Product not found
+    delete:
+      tags:
+        - Products
+      summary: Delete a product
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The product ID
+      responses:
+        '204':
+          description: Product deleted successfully
+        '404':
+          description: Product not found
+  # ------------------------- Product Categories requests ---------------
+  /product-categories:
+    get:
+      tags:
+        - Product Categories
+      summary: Get a list of product categories
+      responses:
+        '200':
+          description: A JSON array of product category objects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductCategory'
+    post:
+      tags:
+        - Product Categories
+      summary: Create a new product category
+      requestBody:
+        description: Product category object to be added
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/ProductCategory'
+                - type: object
+                  required:
+                    - categoryName
+                    - description
+            example:
+              categoryName: 'custom'
+              description: 'Updated category description'
+      responses:
+        '201':
+          description: Product category created successfully
+
+  /product-categories/{id}:
+    put:
+      tags:
+        - Product Categories
+      summary: Update a product category
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The product category ID
+      requestBody:
+        description: Product category object to be updated.
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/ProductCategory'
+                - type: object
+                  required:
+                    - categoryName
+                    - description
+            example:
+              categoryName: 'custom'
+              description: 'Updated category description'
+      responses:
+        '200':
+          description: Product category updated successfully
+        '404':
+          description: Product category not found
+    delete:
+      tags:
+        - Product Categories
+      summary: Delete a product category
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The product category ID
+      responses:
+        '204':
+          description: Product category deleted successfully
+        '404':
+          description: Product category not found
+  # ------------------------- PriceAndSizes requests ---------------
+  /prices-sizes:
+    get:
+      tags:
+        - Product and Sizes
+      summary: Get a list of Prices and sizes objects
+      responses:
+        '200':
+          description: A JSON array of product category objects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PriceAndSizes'
+    post:
+      tags:
+        - Product and Sizes
+      summary: Add new PriceAndSizes data
+      requestBody:
+        description: PriceAndSizes data was added
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/PriceAndSizes'
+                - type: object
+                  required:
+                    - size
+                    - price
+            example:
+              size: '6,8 x 6,8 cm'
+              price: 10.99
+      responses:
+        '201':
+          description: Product category created successfully
+
+  /prices-sizes/{id}:
+    put:
+      tags:
+        - Product and Sizes
+      summary: Update a product and sizes object
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The product category ID
+      requestBody:
+        description: Product category object to be updated.
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/PriceAndSizes'
+                - type: object
+                  required:
+                    - size
+                    - price
+            example:
+              size: '6,8 x 6,8 cm'
+              price: 10.99
+      responses:
+        '200':
+          description: Product category updated successfully
+        '404':
+          description: Product category not found
+    delete:
+      tags:
+        - Product and Sizes
+      summary: Delete a prices and sizes data
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The product category ID
+      responses:
+        '204':
+          description: Product category deleted successfully
+        '404':
+          description: Product category not found
 
 components:
   schemas:
     Product:
       type: object
+      description: Data about product
       properties:
         id:
           type: string
@@ -69,9 +321,14 @@ components:
         description:
           type: string
           description: A detailed description of the product.
+        category:
+          $ref: '#/components/schemas/ProductCategory'
         imgName:
           type: string
           description: The name of the image file associated with the product.
+        isImageUploaded:
+          type: boolean
+          description: Flag indicating if the product requires the user to upload their own image.
         createDate:
           type: string
           format: date-time
@@ -80,40 +337,93 @@ components:
           type: string
           format: date-time
           description: The date and time when the product was last updated.
-        idComments:
+        isRemoved:
+          type: boolean
+          description: Indicates whether the product is available
+        pricesAndSizes:
           type: array
           items:
-            type: string
-          description: An array of comment IDs associated with the product.
-        price:
-          type: object
-          properties:
-            defaultPrice:
-              type: number
-              format: float
-              description: The default price of the product.
-            discountPrice:
-              type: number
-              format: float
-              description: The discounted price of the product, if applicable.
-            editDate:
-              type: string
-              format: date-time
-              description: The date and time when the price was last updated.
-            lowestPrice30day:
-              type: number
-              format: float
-              description: The lowest price of the product in the last 30 days, displayed if there's a discount
-          required:
-            - defaultPrice
-            - editDate
-          description: Price details including default and discounted prices, along with metadata.
-        inStock:
-          type: boolean
-          description: Indicates whether the product is in stock.
+            $ref: '#/components/schemas/PriceAndSizes'
+          description: An array of size objects referencing the available dimensions for the product, along with pricing.
       required:
         - id
         - name
-        - price
+        - description
+        - category
+        - imgName
+        - isImageUploaded
         - createDate
         - editDate
+        - isRemoved
+        - pricesAndSizes
+      example:
+        id: '12345'
+        name: 'Custom Magnet'
+        description: 'A customizable fridge magnet.'
+        category: 'custom'
+        imgName: 'magnet12345.png'
+        uploadedImage: true
+        createDate: '2023-01-01T10:00:00Z'
+        editDate: '2023-01-02T15:00:00Z'
+        inStock: true
+        dimensions:
+          - id: '6.8x6.8'
+            desc: '6,8 x 6,8 cm'
+            price: 2.9
+            category: 'custom'
+          - id: '9.5x6.8'
+            desc: '9,5 x 6,8 cm'
+            price: 5.0
+            category: 'custom'
+    PriceAndSizes:
+      type: object
+      description: Price information based on product type and dimensions
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the size option.
+        size:
+          type: string
+          description: A textual description of the size dimensions.
+        price:
+          type: number
+          format: float
+          description: The price associated with this size.
+      required:
+        - id
+        - size
+        - price
+      example:
+        - id: '6.8x6.8'
+          size: '6,8 x 6,8 cm'
+          price: 2.9
+        - id: '9.5x6.8'
+          size: '9,5 x 6,8 cm'
+          price: 5.0
+        - id: '9.5x9.5'
+          size: '9,5 x 9,5 cm'
+          price: 7.2
+        - id: '10x14'
+          size: '10 x 14 cm'
+          price: 9.1
+    ProductCategory:
+      type: object
+      description: Product category type with description
+      properties:
+        id:
+          type: string
+          description: The unique identifier for a product.
+        categoryName:
+          type: string
+          description: Categories of the product including custom and pre-designed options.
+        description:
+          type: string
+          description: Category type description that will be displayed
+      required:
+        - id
+        - categoryName
+        - description
+      example:
+        - id: dwa-12daw-123
+        - categoryName: custom
+        - description: User upload own photo

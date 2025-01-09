@@ -2,7 +2,10 @@
     "name": "global-scripts",
     "version": "1.0.0",
     "scripts": {
-        "gen:magnets-api-all": "npm run gen:magnets-api --prefix client && npm run gen:magnets-api --prefix admin-client && npm run gen:magnets-api --prefix server"
+        "dev:app": "concurrently \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
+        "build:app": "npm run build --prefix server && npm run build --prefix client",
+        "prod:app": "concurrently \"npm run prod --prefix server\" \"npm run preview --prefix client\"",
+        "gen:magnetsApi:app": "npm run gen:magnets-api --prefix client && npm run gen:magnets-api --prefix admin-client && npm run gen:magnets-api --prefix server"
     },
     "devDependencies": {
         "@openapitools/openapi-generator-cli": "^2.15.3"
