@@ -1,16 +1,13 @@
 import mongoose from 'mongoose';
-import { Product, ProductCategory } from '../api/magnetsServer/generated';
-import { DB_COLLECTIONS } from '../config/MongoDBConfig';
+import { ProductPayload } from '../api/magnetsServer/generated';
+import { DB_COLLECTIONS, MongoDocument } from '../config/MongoDBConfig';
 
-export interface ProductDocument
-  extends Omit<Product, 'id'>,
-    mongoose.Document {}
-const Schema = mongoose.Schema;
+export interface ProductDocument extends MongoDocument<ProductPayload> {}
 
-const productSchema = new Schema({
+const productSchema = new mongoose.Schema({
   name: String,
   description: String,
-  category: {
+  categoryId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: DB_COLLECTIONS.ProductCategories, // Odwołanie do kolekcji PricesAndSizes
     required: true,
@@ -20,7 +17,7 @@ const productSchema = new Schema({
   createDate: Date,
   editDate: Date,
   isRemoved: Boolean,
-  pricesAndSizes: [
+  pricesAndSizesIds: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: DB_COLLECTIONS.PricesAndSizes, // Odwołanie do kolekcji PricesAndSizes

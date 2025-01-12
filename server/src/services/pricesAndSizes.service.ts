@@ -45,7 +45,7 @@ const editById = async (id: string, payload: Omit<PriceAndSizes, 'id'>) => {
 const removeById = async (id: string): Promise<void> => {
   try {
     const document = await PriceAndSizeModel.findById(id);
-    console.log(document);
+
     if (!document) {
       throw new Error(`No document in ${SERVICE_NAME} with given id`);
     }
