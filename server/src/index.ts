@@ -27,11 +27,9 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 });
 
 //ApiRoutes
-app.use('/todolist', require('./routes/api/todoList'));
 app.use('/products', require('./routes/api/products.route'));
 app.use('/prices-sizes', require('./routes/api/pricesAndSizes.route'));
 app.use('/product-categories', require('./routes/api/productCategories.route'));
-// app.use('/prices', require('./routes/api/prices.route'));
 
 // handle UNKNOWN URL REQUESTS
 app.all('*', (req: Request, res: Response) => {

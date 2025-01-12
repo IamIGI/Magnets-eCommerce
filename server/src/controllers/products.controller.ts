@@ -1,64 +1,48 @@
 import { Request, Response } from 'express';
 import productsService from '../services/products.service';
-import { Product } from '../api/magnetsServer/generated';
+import { ProductPayload } from '../api/magnetsServer/generated';
+import validateRequestUtil from '../utils/validateRequest.util';
 
-/**
- * Controller to fetch all products.
- * @param {Request} req - Express request object.
- * @param {Response} res - Express response object.
- */
-const getAllProducts = async (req: Request, res: Response) => {
+const getAll = async (req: Request, res: Response) => {
   try {
-    const products = await productsService.getAllProducts();
+    const products = await productsService.getAll();
     res.status(200).json(products);
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
 };
 
-/**
- * Controller to fetch a single product by ID.
- * @param {Request} req - Express request object.
- * @param {Response} res - Express response object.
- */
-const getProductById = async (req: Request, res: Response) => {
+const getById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const product = await productsService.getProductById(id);
-    if (!product) {
-      res.status(404).json({ message: 'Product not found' });
-    }
+    const product = await productsService.getById(id);
+
+    validateRequestUtil.validateId(id);
+
     res.status(200).json(product);
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
 };
 
-/**
- * Controller to create a new product.
- * @param {Request} req - Express request object.
- * @param {Response} res - Express response object.
- */
-const addNewProduct = async (req: Request, res: Response) => {
+const add = async (req: Request, res: Response) => {
   try {
-    const productData = req.body as Product;
-    const newProduct = await productsService.createProduct(productData);
+    const productData = req.body as ProductPayload;
+    const newProduct = await productsService.add(productData);
     res.status(201).json(newProduct);
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
 };
 
-/**
- * Controller to update a product by ID.
- * @param {Request} req - Express request object.
- * @param {Response} res - Express response object.
- */
-const updateProductById = async (req: Request, res: Response) => {
+const editById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const updateData = req.body;
-    const updatedProduct = await productsService.updateProduct(id, updateData);
+    const updateData = req.body as ProductPayload;
+
+    validateRequestUtil.validateId(id);
+
+    const updatedProduct = await productsService.editById(id, updateData);
     if (!updatedProduct) {
       res.status(404).json({ message: 'Product not found' });
     }
@@ -68,25 +52,23 @@ const updateProductById = async (req: Request, res: Response) => {
   }
 };
 
-/**
- * Controller to delete a product by ID.
- * @param {Request} req - Express request object.
- * @param {Response} res - Express response object.
- */
-const deleteProductById = async (req: Request, res: Response) => {
+const removeById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    await productsService.deleteProduct(id);
-    res.status(204).send();
+
+    validateRequestUtil.validateId(id);
+
+    await productsService.removeById(id);
+    res.status(200).send({ id });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
 };
 
 export default {
-  addNewProduct,
-  deleteProductById,
-  updateProductById,
-  getProductById,
-  getAllProducts,
+  getAll,
+  getById,
+  editById,
+  add,
+  removeById,
 };

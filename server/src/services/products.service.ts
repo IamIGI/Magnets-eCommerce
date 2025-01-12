@@ -1,62 +1,87 @@
-import { Product } from '../api/magnetsServer/generated';
+import { Product, ProductPayload } from '../api/magnetsServer/generated';
+import productMapper from '../mappers/product.mapper';
 import PriceAndSizeModel from '../models/PricesAndSizes.model';
+import ProductCategoryModel from '../models/ProductCategories.model';
 import ProductModel, { ProductDocument } from '../models/Products.model';
 
-/**
- * Get a list of all products.
- * @returns {Promise<Document[]>} A promise that resolves to an array of product documents.
- */
-const getAllProducts = async () => {
+const SERVICE_NAME = 'Products';
+
+const getAll = async (): Promise<Product[]> => {
   try {
     const products = await ProductModel.find();
-    const prices = await PriceAndSizeModel.find();
-    console.log(products);
-    console.log(prices);
-    return products;
+    const pricesAndSizes = await PriceAndSizeModel.find();
+    const categories = await ProductCategoryModel.find();
+
+    const productsData = products.map((product) => {
+      const categoryItem = categories.find((item) => {
+        return item._id.toString() === product.categoryId.toString();
+      });
+      const priceAndSizeItems = pricesAndSizes.filter((item) =>
+        product.pricesAndSizesIds.includes(item._id)
+      );
+      if (!categoryItem || priceAndSizeItems.length === 0) {
+        console.log(categoryItem);
+        throw new Error(
+          `Could not found category or price for given product.\n 
+            category: ${Boolean(categoryItem)}\n
+            priceAndSizeItems: ${priceAndSizeItems.length === 0} `
+        );
+      }
+      return productMapper.mapProductDocumentToProduct(
+        product,
+        categoryItem,
+        pricesAndSizes
+      );
+    });
+
+    return productsData;
   } catch (err: any) {
-    throw new Error(`Failed to fetch products: ${err.message}`);
+    throw new Error(`Failed to fetch products.\n Error:${err.message}`);
   }
 };
 
-/**
- * Get a product by its ID.
- * @param {string} id - The ID of the product.
- * @returns {Promise<Document | null>} A promise that resolves to the product document or null if not found.
- */
-const getProductById = async (id: string): Promise<Document | null> => {
+const getById = async (id: string) => {
   try {
-    return await ProductModel.findById(id);
+    const product = await ProductModel.findById(id);
+    //TODO: set error when product not found
+    if (!product) {
+      throw new Error('Not found');
+    }
+
+    const category = await ProductCategoryModel.findById(product.categoryId);
+    const priceAndSizeItems = await PriceAndSizeModel.find({
+      _id: { $in: product.pricesAndSizesIds },
+    });
+    if (!category || priceAndSizeItems.length === 0) {
+      throw new Error(
+        `Could not found category or price for given product.\n 
+            category: ${Boolean(category)}\n
+            priceAndSizeItems: ${priceAndSizeItems.length === 0} `
+      );
+    }
+
+    return productMapper.mapProductDocumentToProduct(
+      product,
+      category,
+      priceAndSizeItems
+    );
   } catch (err: any) {
-    throw new Error(`Failed to fetch product with ID ${id}: ${err.message}`);
+    throw new Error(
+      `Failed to fetch product with ID ${id}:\n Error: ${err.message}`
+    );
   }
 };
 
-/**
- * Create a new product.
- * @param {object} productData - The data for the new product.
- * @returns {Promise<Document>} A promise that resolves to the newly created product document.
- */
-const createProduct = async (
-  productData: Product
-): Promise<ProductDocument> => {
+const add = async (productData: ProductPayload): Promise<ProductDocument> => {
   try {
     const product = new ProductModel(productData);
     return await product.save();
   } catch (err: any) {
-    throw new Error(`Failed to create product: ${err.message}`);
+    throw new Error(`Failed to create product.\n Error: ${err.message}`);
   }
 };
 
-/**
- * Update a product by its ID.
- * @param {string} id - The ID of the product to update.
- * @param {object} updateData - The data to update the product with.
- * @returns {Promise<Document | null>} A promise that resolves to the updated product document or null if not found.
- */
-const updateProduct = async (
-  id: string,
-  updateData: Product
-): Promise<Document | null> => {
+const editById = async (id: string, updateData: ProductPayload) => {
   try {
     return await ProductModel.findByIdAndUpdate(id, updateData, { new: true });
   } catch (err: any) {
@@ -64,23 +89,21 @@ const updateProduct = async (
   }
 };
 
-/**
- * Delete a product by its ID.
- * @param {string} id - The ID of the product to delete.
- * @returns {Promise<void>} A promise that resolves when the product is deleted.
- */
-const deleteProduct = async (id: string): Promise<void> => {
+const removeById = async (id: string) => {
   try {
-    await ProductModel.findByIdAndDelete(id);
+    const document = await ProductModel.findByIdAndDelete(id);
+    if (!document) {
+      throw new Error(`No document in ${SERVICE_NAME} with given id`);
+    }
   } catch (err: any) {
     throw new Error(`Failed to delete product with ID ${id}: ${err.message}`);
   }
 };
 
 export default {
-  getAllProducts,
-  createProduct,
-  deleteProduct,
-  updateProduct,
-  getProductById,
+  getAll,
+  getById,
+  add,
+  editById,
+  removeById,
 };

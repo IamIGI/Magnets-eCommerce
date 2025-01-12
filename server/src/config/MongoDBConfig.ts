@@ -1,5 +1,10 @@
 import mongoose from 'mongoose';
 
+export type MongoDocument<T> = Omit<mongoose.Document<any>, '_id'> &
+  T & {
+    _id: string; // Enforce _id as string
+  };
+
 const DB_URL =
   process.env.PROD === 'true'
     ? process.env.DATABASE_URI_PROD

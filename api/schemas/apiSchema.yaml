@@ -43,32 +43,26 @@ paths:
           application/json:
             schema:
               allOf:
-                - $ref: '#/components/schemas/Product'
+                - $ref: '#/components/schemas/ProductPayload'
                 - type: object
                   required:
                     - name
                     - description
-                    - category
+                    - categoryId
                     - imgName
                     - isImageUploaded
                     - isRemoved
-                    - pricesAndSizesz
+                    - pricesAndSizesIds
             example:
               name: 'Custom Magnet'
               description: 'A customizable fridge magnet.'
-              category: 'custom'
+              categoryId: '1234'
               imgName: 'magnet12345.png'
-              isImageUploaded: true
-              isRemoved: true
-              dimensions:
-                - id: '6.8x6.8'
-                  desc: '6,8 x 6,8 cm'
-                  price: 2.9
-                  category: 'custom'
-                - id: '9.5x6.8'
-                  desc: '9,5 x 6,8 cm'
-                  price: 5.0
-                  category: 'custom'
+              uploadedImage: true
+              createDate: '2023-01-01T10:00:00Z'
+              editDate: '2023-01-02T15:00:00Z'
+              isRemoved: false
+              pricesAndSizesIds: ['1234', 'abc123']
       responses:
         '201':
           description: Product created successfully
@@ -312,7 +306,7 @@ components:
       type: object
       description: Data about product
       properties:
-        id:
+        _id:
           type: string
           description: The unique identifier for a product.
         name:
@@ -346,7 +340,7 @@ components:
             $ref: '#/components/schemas/PriceAndSizes'
           description: An array of size objects referencing the available dimensions for the product, along with pricing.
       required:
-        - id
+        - _id
         - name
         - description
         - category
@@ -357,7 +351,7 @@ components:
         - isRemoved
         - pricesAndSizes
       example:
-        id: '12345'
+        _id: '12345'
         name: 'Custom Magnet'
         description: 'A customizable fridge magnet.'
         category: 'custom'
@@ -367,19 +361,74 @@ components:
         editDate: '2023-01-02T15:00:00Z'
         inStock: true
         dimensions:
-          - id: '6.8x6.8'
+          - _id: '6.8x6.8'
             desc: '6,8 x 6,8 cm'
             price: 2.9
             category: 'custom'
-          - id: '9.5x6.8'
+          - _id: '9.5x6.8'
             desc: '9,5 x 6,8 cm'
             price: 5.0
             category: 'custom'
+    ProductPayload:
+      type: object
+      description: Paylod to update product data
+      properties:
+        name:
+          type: string
+          description: The name of the product.
+        description:
+          type: string
+          description: A detailed description of the product.
+        categoryId:
+          type: string
+          description: Id of a type
+        imgName:
+          type: string
+          description: The name of the image file associated with the product.
+        isImageUploaded:
+          type: boolean
+          description: Flag indicating if the product requires the user to upload their own image.
+        createDate:
+          type: string
+          format: date-time
+          description: The date and time when the product was created.
+        editDate:
+          type: string
+          format: date-time
+          description: The date and time when the product was last updated.
+        isRemoved:
+          type: boolean
+          description: Indicates whether the product is available
+        pricesAndSizesIds:
+          type: array
+          items:
+            type: string
+          description: An array of ids to size objects referencing the available dimensions for the product, along with pricing.
+      required:
+        - name
+        - description
+        - categoryId
+        - imgName
+        - isImageUploaded
+        - createDate
+        - editDate
+        - isRemoved
+        - pricesAndSizesIds
+      example:
+        name: 'Custom Magnet'
+        description: 'A customizable fridge magnet.'
+        categoryId: '1234'
+        imgName: 'magnet12345.png'
+        uploadedImage: true
+        createDate: '2023-01-01T10:00:00Z'
+        editDate: '2023-01-02T15:00:00Z'
+        isRemoved: false
+        pricesAndSizesIds: ['1234', 'abc123']
     PriceAndSizes:
       type: object
       description: Price information based on product type and dimensions
       properties:
-        id:
+        _id:
           type: string
           description: The unique identifier for the size option.
         size:
@@ -390,29 +439,30 @@ components:
           format: float
           description: The price associated with this size.
       required:
-        - id
+        - _id
         - size
         - price
       example:
-        - id: '6.8x6.8'
+        - _id: '6.8x6.8'
           size: '6,8 x 6,8 cm'
           price: 2.9
-        - id: '9.5x6.8'
+        - _id: '9.5x6.8'
           size: '9,5 x 6,8 cm'
           price: 5.0
-        - id: '9.5x9.5'
+        - _id: '9.5x9.5'
           size: '9,5 x 9,5 cm'
           price: 7.2
-        - id: '10x14'
+        - _id: '10x14'
           size: '10 x 14 cm'
           price: 9.1
     ProductCategory:
       type: object
       description: Product category type with description
       properties:
-        id:
+        _id:
           type: string
           description: The unique identifier for a product.
+          x-originalName: _id
         categoryName:
           type: string
           description: Categories of the product including custom and pre-designed options.
@@ -420,10 +470,10 @@ components:
           type: string
           description: Category type description that will be displayed
       required:
-        - id
+        - _id
         - categoryName
         - description
       example:
-        - id: dwa-12daw-123
+        - _id: dwa-12daw-123
         - categoryName: custom
         - description: User upload own photo

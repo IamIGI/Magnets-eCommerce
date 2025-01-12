@@ -1,10 +1,9 @@
 import mongoose from 'mongoose';
-import { DB_COLLECTIONS } from '../config/MongoDBConfig';
+import { DB_COLLECTIONS, MongoDocument } from '../config/MongoDBConfig';
 import { ProductCategory } from '../api/magnetsServer/generated';
 
 export interface ProductCategoryDocument
-  extends Omit<ProductCategory, 'id'>,
-    mongoose.Document {}
+  extends MongoDocument<ProductCategory> {}
 
 //Product categories are setted from admin controller form
 //We do not know the categories, soo we can't base model on the Enum
