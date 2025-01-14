@@ -13,7 +13,7 @@ tags:
     description: Endpoints related to product management, including creating, updating, and deleting products.
   - name: Product Categories
     description: Endpoints related to managing product categories, such as adding, retrieving, and updating them.
-  - name: Product and Sizes
+  - name: Prices and Sizes
     description: Endpoints related to managing product prices and sizes. Each sizes have own price
 
 paths:

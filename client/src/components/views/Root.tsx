@@ -1,6 +1,6 @@
 import { Route, Routes } from 'react-router-dom';
-import Home from '../templates/home/Home';
-import ProductItem from '../templates/productItem/ProductItem';
+import Home from '../../pages/home/Home';
+import ProductItem from '../../pages/productItem/ProductItem';
 
 export enum NavigationLinks {
   Home = '/',
