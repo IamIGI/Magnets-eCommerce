@@ -2,6 +2,8 @@ import './styles/global.vars.scss';
 import './styles/global.scss';
 import MainTemplate from './components/views/MainTemplate/MainTemplate';
 import Root from './components/views/Root';
+import { Provider } from 'react-redux';
+import store from './state/store.ts';
 
 // Define the interface
 export interface ToDoObject {
@@ -15,9 +17,11 @@ export interface ToDoObject {
 function App() {
   return (
     <div className="app-wrapper">
-      <MainTemplate>
-        <Root />
-      </MainTemplate>
+      <Provider store={store}>
+        <MainTemplate>
+          <Root />
+        </MainTemplate>
+      </Provider>
     </div>
   );
 }
