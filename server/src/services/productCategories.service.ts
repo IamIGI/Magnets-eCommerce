@@ -1,7 +1,8 @@
 import { ProductCategory } from '../api/magnetsServer/generated';
+import { ProductCategoryPayload } from '../controllers/productCategories.controller';
 import ProductCategoryModel from '../models/ProductCategories.model';
 
-const getAllProductCategories = async () => {
+const getAll = async () => {
   try {
     const categories = await ProductCategoryModel.find();
     return categories;
@@ -11,7 +12,7 @@ const getAllProductCategories = async () => {
   }
 };
 
-const addProductCategory = async (category: Omit<ProductCategory, 'id'>) => {
+const add = async (category: ProductCategoryPayload) => {
   try {
     const productCategory = new ProductCategoryModel(category);
     console.log(productCategory);
@@ -22,10 +23,7 @@ const addProductCategory = async (category: Omit<ProductCategory, 'id'>) => {
   }
 };
 
-const editProductCategory = async (
-  id: string,
-  data: Omit<ProductCategory, 'id'>
-) => {
+const editById = async (id: string, data: ProductCategoryPayload) => {
   try {
     return await ProductCategoryModel.findByIdAndUpdate(id, data, {
       new: true,
@@ -42,7 +40,7 @@ const editProductCategory = async (
  * @param {string} id - The ID of the product to delete.
  * @returns {Promise<void>} A promise that resolves when the product is deleted.
  */
-const deleteProductCategory = async (id: string): Promise<void> => {
+const removeById = async (id: string): Promise<void> => {
   try {
     const document = await ProductCategoryModel.findById(id);
     console.log(document);
@@ -59,8 +57,8 @@ const deleteProductCategory = async (id: string): Promise<void> => {
 };
 
 export default {
-  getAllProductCategories,
-  addProductCategory,
-  editProductCategory,
-  deleteProductCategory,
+  getAll,
+  add,
+  editById,
+  removeById,
 };

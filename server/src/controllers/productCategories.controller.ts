@@ -3,39 +3,51 @@ import productCategoriesService from '../services/productCategories.service';
 import { ProductCategory } from '../api/magnetsServer/generated';
 import validateRequestUtil from '../utils/validateRequest.util';
 
-const getAllProductCategories = async (req: Request, res: Response) => {
+export type ProductCategoryPayload = Omit<ProductCategory, '_id'>;
+const REQUIRED_KEYS: Array<keyof ProductCategoryPayload> = [
+  'categoryName',
+  'description',
+];
+
+const getAll = async (req: Request, res: Response) => {
   try {
-    console.log('getAllProductCategories');
-    const productCategories =
-      await productCategoriesService.getAllProductCategories();
+    const productCategories = await productCategoriesService.getAll();
     res.status(200).json(productCategories);
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
 };
 
-const addNewProductCategory = async (req: Request, res: Response) => {
+const add = async (req: Request, res: Response) => {
   try {
-    const categoryData = req.body as Omit<ProductCategory, 'id'>;
-    const newCategory = await productCategoriesService.addProductCategory(
-      categoryData
+    const payload = req.body as ProductCategoryPayload;
+
+    validateRequestUtil.isValidPayload<ProductCategoryPayload>(
+      payload,
+      REQUIRED_KEYS
     );
+
+    const newCategory = await productCategoriesService.add(payload);
     res.status(201).json(newCategory);
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
 };
 
-const editProductCategory = async (req: Request, res: Response) => {
+const editById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const updatedData = req.body as Omit<ProductCategory, 'id'>;
+    const payload = req.body as ProductCategoryPayload;
 
     validateRequestUtil.validateId(id);
+    validateRequestUtil.isValidPayload<ProductCategoryPayload>(
+      payload,
+      REQUIRED_KEYS
+    );
 
-    const updatedCategory = await productCategoriesService.editProductCategory(
+    const updatedCategory = await productCategoriesService.editById(
       id,
-      updatedData
+      payload
     );
     if (!updatedCategory) {
       res.status(404).json({ message: 'Product category  not found' });
@@ -51,13 +63,13 @@ const editProductCategory = async (req: Request, res: Response) => {
  * @param {Request} req - Express request object.
  * @param {Response} res - Express response object.
  */
-const deleteProductCategoryById = async (req: Request, res: Response) => {
+const removeById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
     validateRequestUtil.validateId(id);
 
-    await productCategoriesService.deleteProductCategory(id);
+    await productCategoriesService.removeById(id);
     res.status(200).send({ id });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
@@ -65,8 +77,8 @@ const deleteProductCategoryById = async (req: Request, res: Response) => {
 };
 
 export default {
-  getAllProductCategories,
-  addNewProductCategory,
-  editProductCategory,
-  deleteProductCategoryById,
+  getAll,
+  add,
+  editById,
+  removeById,
 };

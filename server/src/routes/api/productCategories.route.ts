@@ -3,11 +3,9 @@ import productCategoriesController from '../../controllers/productCategories.con
 
 const router = express.Router();
 
-router.route('/').get(productCategoriesController.getAllProductCategories);
-router.route('/').post(productCategoriesController.addNewProductCategory);
-router.route('/:id').put(productCategoriesController.editProductCategory);
-router
-  .route('/:id')
-  .delete(productCategoriesController.deleteProductCategoryById);
+router.route('/').get(productCategoriesController.getAll);
+router.route('/').post(productCategoriesController.add);
+router.route('/:id').put(productCategoriesController.editById);
+router.route('/:id').delete(productCategoriesController.removeById);
 
 export = router;

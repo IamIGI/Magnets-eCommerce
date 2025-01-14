@@ -1,4 +1,5 @@
 import { PriceAndSizes } from '../api/magnetsServer/generated';
+import { PricesAndSizesPayload } from '../controllers/pricesAndSizes.controller';
 import PriceAndSizeModel from '../models/PricesAndSizes.model';
 
 const SERVICE_NAME = 'PricesAndSizes';
@@ -13,7 +14,7 @@ const getAll = async () => {
   }
 };
 
-const add = async (payload: Omit<PriceAndSizes, 'id'>) => {
+const add = async (payload: PricesAndSizesPayload) => {
   try {
     console.log(payload);
     const PriceAndSizes = new PriceAndSizeModel(payload);
@@ -25,7 +26,7 @@ const add = async (payload: Omit<PriceAndSizes, 'id'>) => {
   }
 };
 
-const editById = async (id: string, payload: Omit<PriceAndSizes, 'id'>) => {
+const editById = async (id: string, payload: PricesAndSizesPayload) => {
   try {
     return await PriceAndSizeModel.findByIdAndUpdate(id, payload, {
       new: true,
