@@ -43,14 +43,14 @@ paths:
           application/json:
             schema:
               allOf:
-                - $ref: '#/components/schemas/ProductPayload'
+                - $ref: '#/components/schemas/ProductUpdateData'
                 - type: object
                   required:
                     - name
                     - description
                     - categoryId
                     - imgName
-                    - isImageUploaded
+                    - isUserImageRequired
                     - isRemoved
                     - pricesAndSizesIds
             example:
@@ -320,16 +320,14 @@ components:
         imgName:
           type: string
           description: The name of the image file associated with the product.
-        isImageUploaded:
+        isUserImageRequired:
           type: boolean
           description: Flag indicating if the product requires the user to upload their own image.
         createDate:
           type: string
-          format: date-time
           description: The date and time when the product was created.
         editDate:
           type: string
-          format: date-time
           description: The date and time when the product was last updated.
         isRemoved:
           type: boolean
@@ -345,7 +343,7 @@ components:
         - description
         - category
         - imgName
-        - isImageUploaded
+        - isUserImageRequired
         - createDate
         - editDate
         - isRemoved
@@ -369,7 +367,7 @@ components:
             desc: '9,5 x 6,8 cm'
             price: 5.0
             category: 'custom'
-    ProductPayload:
+    ProductUpdateData:
       type: object
       description: Paylod to update product data
       properties:
@@ -384,17 +382,15 @@ components:
           description: Id of a type
         imgName:
           type: string
-          description: The name of the image file associated with the product.
-        isImageUploaded:
+          description: The image that will be displayed  in product info
+        isUserImageRequired:
           type: boolean
           description: Flag indicating if the product requires the user to upload their own image.
         createDate:
           type: string
-          format: date-time
           description: The date and time when the product was created.
         editDate:
           type: string
-          format: date-time
           description: The date and time when the product was last updated.
         isRemoved:
           type: boolean
@@ -409,7 +405,7 @@ components:
         - description
         - categoryId
         - imgName
-        - isImageUploaded
+        - isUserImageRequired
         - createDate
         - editDate
         - isRemoved
@@ -419,7 +415,7 @@ components:
         description: 'A customizable fridge magnet.'
         categoryId: '1234'
         imgName: 'magnet12345.png'
-        uploadedImage: true
+        isUserImageRequired: true
         createDate: '2023-01-01T10:00:00Z'
         editDate: '2023-01-02T15:00:00Z'
         isRemoved: false

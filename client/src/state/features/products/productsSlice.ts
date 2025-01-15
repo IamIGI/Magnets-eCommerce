@@ -15,16 +15,7 @@ const initialState: ProductsState = {
 };
 
 export const fetchProducts = createAsyncThunk('products/get', async () => {
-  console.log('t1');
-  const response = await magnetsServerApi.productService.productsGet();
-  const serializedResponse = response.map((product: Product) => ({
-    ...product,
-    //TODO: MEC-102 - remove serializeResponse after backend handle date management
-    createDate: new Date(product.createDate).toISOString() as unknown as Date,
-    editDate: new Date(product.editDate).toISOString() as unknown as Date,
-  }));
-  console.log(serializedResponse);
-  return serializedResponse;
+  return await magnetsServerApi.productService.productsGet();
 });
 
 const productsSlice = createSlice({

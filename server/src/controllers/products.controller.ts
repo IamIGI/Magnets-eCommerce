@@ -1,13 +1,15 @@
 import { Request, Response } from 'express';
 import productsService from '../services/products.service';
-import { ProductPayload } from '../api/magnetsServer/generated';
+import { ProductUpdateData } from '../api/magnetsServer/generated';
 import validateRequestUtil from '../utils/validateRequest.util';
 
+export interface ProductPayload
+  extends Omit<ProductUpdateData, 'createDate' | 'editDate'> {}
 const REQUIRED_KEYS: Array<keyof ProductPayload> = [
   'categoryId',
   'description',
   'imgName',
-  'isImageUploaded',
+  'isUserImageRequired',
   'isRemoved',
   'pricesAndSizesIds',
 ];

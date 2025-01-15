@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
-import { ProductPayload } from '../api/magnetsServer/generated';
+import { ProductUpdateData } from '../api/magnetsServer/generated';
 import { DB_COLLECTIONS, MongoDocument } from '../config/MongoDBConfig';
 
-export interface ProductDocument extends MongoDocument<ProductPayload> {}
+export interface ProductDocument extends MongoDocument<ProductUpdateData> {}
 
 const productSchema = new mongoose.Schema({
   name: String,
@@ -13,7 +13,7 @@ const productSchema = new mongoose.Schema({
     required: true,
   },
   imgName: String, //in future images will be fetched from server, right now they are saved in clients public folder
-  isImageUpload: Boolean,
+  isUserImageRequired: Boolean,
   createDate: Date,
   editDate: Date,
   isRemoved: Boolean,
