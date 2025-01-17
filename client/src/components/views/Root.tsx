@@ -4,7 +4,7 @@ import ProductItem from '../../pages/productItem/ProductItem';
 
 export enum NavigationLinks {
   Home = '/',
-  ProductItem = '/productItem',
+  ProductItem = '/productItem/:id',
 }
 
 const Root = () => {

@@ -14,10 +14,10 @@ const MainTemplate: React.FC<{ children: ReactNode }> = ({ children }) => {
       {children}
       <Footer />
       {/* SlideOutContent */}
-      <CartPreview
+      {/* <CartPreview
         isVisible={isCartVisible}
         onCloseCart={() => setCartVisibility(false)}
-      />
+      /> */}
     </BrowserRouter>
   );
 };

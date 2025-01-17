@@ -1,27 +1,45 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Product } from '../../../api/magnetsServer/generated';
 import magnetsServerApi from '../../../api/magnetsServer/magnetsServer.api.config';
+import { FetchStatus } from '../../../interfaces/global';
 
 interface ProductsState {
-  items: Product[];
-  status: 'idle' | 'loading' | 'failed';
+  products: Product[];
+  status: FetchStatus;
   counter: number;
+  selectedProduct: Product | null;
 }
 
 const initialState: ProductsState = {
-  items: [],
-  status: 'idle',
+  products: [],
+  status: FetchStatus.Idle,
   counter: 0,
+  selectedProduct: null,
 };
 
 export const fetchProducts = createAsyncThunk('products/get', async () => {
   return await magnetsServerApi.productService.productsGet();
 });
 
+export const fetchProductById = createAsyncThunk(
+  'products/getById',
+  async (id: string) => {
+    return await magnetsServerApi.productService.productsIdGet(id);
+  }
+);
+
 const productsSlice = createSlice({
   name: 'products',
   initialState,
   reducers: {
+    setSelectedProduct: (state, action: PayloadAction<string>) => {
+      const id = action.payload;
+
+      return {
+        ...state,
+        selectedProduct: state.products.find((p) => p.id === id) || null,
+      };
+    },
     inc: (state) => {
       return {
         ...state,
@@ -44,17 +62,30 @@ const productsSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchProducts.pending, (state) => {
-        state.status = 'loading';
+        state.status = FetchStatus.Loading;
       })
       .addCase(
         fetchProducts.fulfilled,
         (state, action: PayloadAction<Product[]>) => {
-          state.items = action.payload;
-          state.status = 'idle';
+          state.products = action.payload;
+          state.status = FetchStatus.Idle;
         }
       )
       .addCase(fetchProducts.rejected, (state) => {
-        state.status = 'failed';
+        state.status = FetchStatus.Failed;
+      })
+      .addCase(fetchProductById.pending, (state) => {
+        state.status = FetchStatus.Loading;
+      })
+      .addCase(
+        fetchProductById.fulfilled,
+        (state, action: PayloadAction<Product>) => {
+          state.selectedProduct = action.payload; // Update the selected product
+          state.status = FetchStatus.Idle;
+        }
+      )
+      .addCase(fetchProductById.rejected, (state) => {
+        state.status = FetchStatus.Failed;
       });
   },
 });
