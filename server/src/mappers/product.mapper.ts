@@ -15,8 +15,8 @@ function mapProductDocumentToProduct(
     createDate: product.createDate,
     editDate: product.editDate,
     description: product.description,
-    imgName: product.imgName,
-    isImageUploaded: product.isImageUploaded,
+    imgNames: product.imgNames,
+    isUserImageRequired: product.isUserImageRequired,
     isRemoved: product.isRemoved,
     pricesAndSizes: pricesAndSizes,
   } as Product;

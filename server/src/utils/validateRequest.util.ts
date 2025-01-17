@@ -28,7 +28,33 @@ function isValidPayload<T>(
     }
   }
 }
+
+function isValidArraySize(
+  keyName: string,
+  value: any[],
+  min: number,
+  max: number,
+  exactly: boolean = false
+) {
+  if (exactly) {
+    console.log(value);
+    if (value.length !== min && value.length !== max) {
+      throw new Error(
+        `Key ${keyName} have to has array length exactly ${min} or ${max}`
+      );
+    }
+  } else {
+    if (value.length < min) {
+      throw new Error(`Key ${keyName} have to has array of MIN length: ${min}`);
+    }
+    if (value.length > max) {
+      throw new Error(`Key ${keyName} have to has array of MAX length: ${max}`);
+    }
+  }
+}
+
 export default {
   validateId,
   isValidPayload,
+  isValidArraySize,
 };

@@ -12,7 +12,7 @@ const productSchema = new mongoose.Schema({
     ref: DB_COLLECTIONS.ProductCategories, // Odwołanie do kolekcji PricesAndSizes
     required: true,
   },
-  imgName: String, //in future images will be fetched from server, right now they are saved in clients public folder
+  imgNames: [String], //in future images will be fetched from server, right now they are saved in clients public folder
   isUserImageRequired: Boolean,
   createDate: Date,
   editDate: Date,

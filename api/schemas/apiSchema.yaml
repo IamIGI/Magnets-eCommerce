@@ -32,6 +32,37 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Product'
+              example:
+                - name: 'Custom Magnet'
+                  description: 'A customizable fridge magnet.'
+                  categoryId: '1234'
+                  imgNames:
+                    [
+                      'magnet12345.png',
+                      'magnet23456.png',
+                      'magnet22256.png',
+                      'magnet11116.png',
+                    ]
+                  uploadedImage: true
+                  createDate: '2023-01-01T10:00:00Z'
+                  editDate: '2023-01-02T15:00:00Z'
+                  isRemoved: false
+                  pricesAndSizesIds: ['1234', 'abc123']
+                - name: 'Custom Magnet123'
+                  description: 'A customizable fridge magnet.'
+                  categoryId: '12342'
+                  imgNames:
+                    [
+                      'magnet12345.png',
+                      'magnet23456.png',
+                      'magnet22256.png',
+                      'magnet11116.png',
+                    ]
+                  uploadedImage: true
+                  createDate: '2023-01-01T10:00:00Z'
+                  editDate: '2023-01-02T15:00:00Z'
+                  isRemoved: false
+                  pricesAndSizesIds: ['1234', 'abc123']
     post:
       tags:
         - Products
@@ -57,7 +88,13 @@ paths:
               name: 'Custom Magnet'
               description: 'A customizable fridge magnet.'
               categoryId: '1234'
-              imgName: 'magnet12345.png'
+              imgNames:
+                [
+                  'magnet12345.png',
+                  'magnet23456.png',
+                  'magnet22256.png',
+                  'magnet11116.png',
+                ]
               uploadedImage: true
               createDate: '2023-01-01T10:00:00Z'
               editDate: '2023-01-02T15:00:00Z'
@@ -317,9 +354,13 @@ components:
           description: A detailed description of the product.
         category:
           $ref: '#/components/schemas/ProductCategory'
-        imgName:
-          type: string
-          description: The name of the image file associated with the product.
+        imgNames:
+          type: array
+          description: The names of the image files associated with the product.
+          items:
+            type: string
+          minItems: 1
+          maxItems: 4
         isUserImageRequired:
           type: boolean
           description: Flag indicating if the product requires the user to upload their own image.
@@ -342,7 +383,7 @@ components:
         - name
         - description
         - category
-        - imgName
+        - imgNames
         - isUserImageRequired
         - createDate
         - editDate
@@ -353,7 +394,7 @@ components:
         name: 'Custom Magnet'
         description: 'A customizable fridge magnet.'
         category: 'custom'
-        imgName: 'magnet12345.png'
+        imgNames: ['magnet12345.png']
         uploadedImage: true
         createDate: '2023-01-01T10:00:00Z'
         editDate: '2023-01-02T15:00:00Z'
@@ -380,9 +421,13 @@ components:
         categoryId:
           type: string
           description: Id of a type
-        imgName:
-          type: string
-          description: The image that will be displayed  in product info
+        imgNames:
+          type: array
+          description: The names of the image files to be displayed in product info.
+          items:
+            type: string
+          minItems: 1
+          maxItems: 4
         isUserImageRequired:
           type: boolean
           description: Flag indicating if the product requires the user to upload their own image.
@@ -404,7 +449,7 @@ components:
         - name
         - description
         - categoryId
-        - imgName
+        - imgNames
         - isUserImageRequired
         - createDate
         - editDate
@@ -414,7 +459,13 @@ components:
         name: 'Custom Magnet'
         description: 'A customizable fridge magnet.'
         categoryId: '1234'
-        imgName: 'magnet12345.png'
+        imgNames:
+          [
+            'magnet12345.png',
+            'magnet23456.png',
+            'magnet22256.png',
+            'magnet11116.png',
+          ]
         isUserImageRequired: true
         createDate: '2023-01-01T10:00:00Z'
         editDate: '2023-01-02T15:00:00Z'
