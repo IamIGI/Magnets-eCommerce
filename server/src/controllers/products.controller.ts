@@ -8,7 +8,7 @@ export interface ProductPayload
 const REQUIRED_KEYS: Array<keyof ProductPayload> = [
   'categoryId',
   'description',
-  'imgName',
+  'imgNames',
   'isUserImageRequired',
   'isRemoved',
   'pricesAndSizesIds',
@@ -41,6 +41,13 @@ const add = async (req: Request, res: Response) => {
     const payload = req.body as ProductPayload;
 
     validateRequestUtil.isValidPayload(payload, REQUIRED_KEYS);
+    validateRequestUtil.isValidArraySize(
+      'imgNames',
+      payload.imgNames,
+      1,
+      4,
+      true
+    );
 
     const newProduct = await productsService.add(payload);
 
@@ -57,6 +64,13 @@ const editById = async (req: Request, res: Response) => {
 
     validateRequestUtil.validateId(id);
     validateRequestUtil.isValidPayload(payload, REQUIRED_KEYS);
+    validateRequestUtil.isValidArraySize(
+      'imgNames',
+      payload.imgNames,
+      1,
+      4,
+      true
+    );
 
     const updatedProduct = await productsService.editById(id, payload);
     if (!updatedProduct) {
