@@ -2,40 +2,54 @@ import ProductContent from '../../components/productItem/productContent/ProductC
 import ProductImageGallery from '../../components/productItem/productImageGallery/ProductImageGallery';
 import c from './ProductItem.module.scss';
 import { useAppDispatch, useAppSelector } from '../../state/store';
-import {
-  fetchProducts,
-  productSliceActions,
-} from '../../state/features/products/productsSlice';
+import { fetchProductById } from '../../state/features/products/productsSlice';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect } from 'react';
+import { NavigationLinks } from '../../components/views/Root';
+import Loading from '../../components/ui/loading/Loading';
+import { FetchStatus } from '../../interfaces/global';
 
 const ProductItem = () => {
-  const count = useAppSelector((state) => state.products.counter);
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const product = useAppSelector((state) => state.products.selectedProduct);
+  const fetchStatus = useAppSelector((state) => state.products.status);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(fetchProducts());
-  }, []);
+    console.log(id);
+    if (!id) {
+      navigate(NavigationLinks.Home);
+      return;
+    }
+    if (!product) {
+      dispatch(fetchProductById(id!));
+    }
+  }, [id, product]);
+
+  if (fetchStatus === FetchStatus.Loading) {
+    return <Loading />;
+  }
+
+  if (!product) {
+    return <h1>No product</h1>;
+  }
 
   return (
     <div className={c.wrapper}>
       <div className={c.productImageWrapper}>
         <ProductImageGallery
-          imgSrc={[
-            'products/productItem_1.jpg',
-            'products/productItem_2.jpg',
-            'products/productItem_3.jpg',
-          ]}
+          imgSrc={product?.imgNames.map((img) => `/products/${img}`)}
         />
       </div>
       <div className={c.productContentWrapper}>
-        <ProductContent />
+        <ProductContent
+          name={product.name}
+          // category={product.category}
+          desc={product.description}
+          priceAndSizes={product.pricesAndSizes}
+        />
       </div>
-      <h2>{count}</h2>
-      <button onClick={() => dispatch(productSliceActions.inc())}>inc</button>
-      <button onClick={() => dispatch(productSliceActions.dec())}>dec</button>
-      <button onClick={() => dispatch(productSliceActions.incByAmount(10))}>
-        incBy10
-      </button>
     </div>
   );
 };

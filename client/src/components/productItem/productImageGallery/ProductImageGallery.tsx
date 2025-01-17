@@ -13,7 +13,7 @@ const ProductImageGallery: React.FC<ImageGalleryProps> = ({ imgSrc }) => {
       <div className={c.thumbnailColumn}>
         {imgSrc.map((src, index) => (
           <img
-            key={index} //Potential error prone, consider using a unique key
+            key={index}
             src={src}
             alt={`Thumbnail ${index + 1}`}
             className={`${c.thumbnail} ${
