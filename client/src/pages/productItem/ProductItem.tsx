@@ -2,12 +2,13 @@ import ProductContent from '../../components/productItem/productContent/ProductC
 import ProductImageGallery from '../../components/productItem/productImageGallery/ProductImageGallery';
 import c from './ProductItem.module.scss';
 import { useAppDispatch, useAppSelector } from '../../state/store';
-import { fetchProductById } from '../../state/features/products/productsSlice';
+import { fetchProductById } from '../../state/features/products/product.slice';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect } from 'react';
 import { NavigationLinks } from '../../components/views/Root';
 import Loading from '../../components/ui/loading/Loading';
 import { FetchStatus } from '../../interfaces/global';
+import { basketSliceActions } from '../../state/features/basket/basket.slice';
 
 const ProductItem = () => {
   const { id } = useParams<{ id: string }>();
@@ -17,7 +18,6 @@ const ProductItem = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    console.log(id);
     if (!id) {
       navigate(NavigationLinks.Home);
       return;
@@ -29,6 +29,12 @@ const ProductItem = () => {
 
   if (fetchStatus === FetchStatus.Loading) {
     return <Loading />;
+  }
+
+  function addProduct(priceAndSizeId: string, quantity: number) {
+    if (!product) throw new Error('No product found.');
+
+    dispatch(basketSliceActions.add({ product, quantity, priceAndSizeId }));
   }
 
   if (!product) {
@@ -45,9 +51,9 @@ const ProductItem = () => {
       <div className={c.productContentWrapper}>
         <ProductContent
           name={product.name}
-          // category={product.category}
           desc={product.description}
           priceAndSizes={product.pricesAndSizes}
+          handleAddProduct={addProduct}
         />
       </div>
     </div>

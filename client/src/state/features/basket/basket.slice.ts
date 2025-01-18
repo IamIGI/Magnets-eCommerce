@@ -1,23 +1,26 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { PriceAndSizes, Product } from '../../../api/magnetsServer/generated';
+import basketUtils from './basket.utils';
 
-interface BasketItem {
+export interface BasketItem {
   product: Product;
   priceAndSizes: {
-    priceAndSize: PriceAndSizes;
+    priceAndSizeData: PriceAndSizes;
     quantity: number;
     totalPrice: number;
   }[];
   totalPrice: number;
 }
 
-interface CartState {
+interface BasketState {
   basket: BasketItem[];
   totalQuantity: number;
   totalPrice: number;
 }
 
-const initialState: CartState = {
+export const QUANTITY_ARR = [1, 5, 10, 20, 30, 40, 50, 75, 100, 150, 200, 250];
+
+const initialState: BasketState = {
   basket: [],
   totalQuantity: 0,
   totalPrice: 0,
@@ -32,7 +35,7 @@ const basketSlice = createSlice({
   initialState,
   reducers: {
     // Add an item to the basket
-    addItem(
+    add(
       state,
       action: PayloadAction<{
         product: Product;
@@ -57,7 +60,7 @@ const basketSlice = createSlice({
 
       if (existingProduct) {
         const existingSize = existingProduct.priceAndSizes.find(
-          (ps) => ps.priceAndSize.id === priceAndSizeId
+          (ps) => ps.priceAndSizeData.id === priceAndSizeId
         );
 
         if (existingSize) {
@@ -65,7 +68,7 @@ const basketSlice = createSlice({
           existingSize.totalPrice += selectedPriceAndSize.price * quantity;
         } else {
           existingProduct.priceAndSizes.push({
-            priceAndSize: selectedPriceAndSize,
+            priceAndSizeData: selectedPriceAndSize,
             quantity,
             totalPrice: selectedPriceAndSize.price * quantity,
           });
@@ -77,7 +80,7 @@ const basketSlice = createSlice({
           product,
           priceAndSizes: [
             {
-              priceAndSize: selectedPriceAndSize,
+              priceAndSizeData: selectedPriceAndSize,
               quantity,
               totalPrice: selectedPriceAndSize.price * quantity,
             },
@@ -90,7 +93,7 @@ const basketSlice = createSlice({
       state.totalPrice += selectedPriceAndSize.price * quantity;
     },
     // Remove an item from the basket
-    removeItem(
+    remove(
       state,
       action: PayloadAction<{ productId: string; priceAndSizeId: string }>
     ) {
@@ -102,7 +105,7 @@ const basketSlice = createSlice({
       if (productIndex !== -1) {
         const product = state.basket[productIndex];
         const sizeIndex = product.priceAndSizes.findIndex(
-          (ps) => ps.priceAndSize.id === priceAndSizeId
+          (ps) => ps.priceAndSizeData.id === priceAndSizeId
         );
 
         if (sizeIndex !== -1) {
@@ -130,26 +133,32 @@ const basketSlice = createSlice({
       }>
     ) {
       const { productId, priceAndSizeId, quantity } = action.payload;
-      const product = state.basket.find(
+      const basketItem = state.basket.find(
         (item) => item.product.id === productId
       );
 
-      if (product) {
-        const priceAndSizeItem = product.priceAndSizes.find(
-          (ps) => ps.priceAndSize.id === priceAndSizeId
+      if (basketItem) {
+        const priceForSize = basketItem.product.pricesAndSizes.find(
+          (ps) => ps.id === priceAndSizeId
+        )?.price;
+        if (priceForSize === undefined) {
+          throw new Error(
+            `Price not found for priceAndSizeId ${priceAndSizeId}`
+          );
+        }
+
+        const priceAndSizeItem = basketItem.priceAndSizes.find(
+          (ps) => ps.priceAndSizeData.id === priceAndSizeId
         );
 
         if (priceAndSizeItem) {
-          const pricePerUnit =
-            priceAndSizeItem.totalPrice / priceAndSizeItem.quantity;
-          state.totalQuantity += quantity - priceAndSizeItem.quantity;
-          state.totalPrice +=
-            (quantity - priceAndSizeItem.quantity) * pricePerUnit;
-          product.totalPrice +=
-            (quantity - priceAndSizeItem.quantity) * pricePerUnit;
-
           priceAndSizeItem.quantity = quantity;
-          priceAndSizeItem.totalPrice = pricePerUnit * quantity;
+          priceAndSizeItem.totalPrice = quantity * priceForSize;
+
+          state.totalQuantity = basketUtils.calculateTotalQuantity(
+            state.basket
+          );
+          state.totalPrice = basketUtils.calculateTotalPrice(state.basket);
         }
       }
     },
@@ -167,7 +176,7 @@ const basketSlice = createSlice({
 
       if (basketItem) {
         const oldSizeIndex = basketItem.priceAndSizes.findIndex(
-          (ps) => ps.priceAndSize.id === oldPriceAndSizeId
+          (ps) => ps.priceAndSizeData.id === oldPriceAndSizeId
         );
         const newPriceAndSize = basketItem.product.pricesAndSizes.find(
           (ps) => ps.id === newPriceAndSizeId
@@ -177,7 +186,7 @@ const basketSlice = createSlice({
           const oldSize = basketItem.priceAndSizes[oldSizeIndex];
           // Check if the new size already exists in the basket
           const existingNewSize = basketItem.priceAndSizes.find(
-            (ps) => ps.priceAndSize.id === newPriceAndSizeId
+            (ps) => ps.priceAndSizeData.id === newPriceAndSizeId
           );
 
           if (existingNewSize) {
@@ -189,7 +198,7 @@ const basketSlice = createSlice({
             //remove old size
             basketItem.priceAndSizes.splice(oldSizeIndex, 1);
           } else {
-            oldSize.priceAndSize = newPriceAndSize;
+            oldSize.priceAndSizeData = newPriceAndSize;
             oldSize.totalPrice = oldSize.quantity * newPriceAndSize.price;
           }
 

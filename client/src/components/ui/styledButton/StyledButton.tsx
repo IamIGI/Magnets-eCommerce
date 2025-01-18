@@ -1,7 +1,7 @@
-import { ReactNode } from 'react';
+import { ButtonHTMLAttributes, ReactNode } from 'react';
 import c from './StyledButton.module.scss';
 
-interface StyledButtonProps {
+interface StyledButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
   upperCase?: boolean;
 }
@@ -9,11 +9,13 @@ interface StyledButtonProps {
 const StyledButton: React.FC<StyledButtonProps> = ({
   children,
   upperCase = false,
+  ...buttonProps
 }) => {
   return (
     <button
       className={c.wrapper}
       style={upperCase ? { textTransform: 'uppercase' } : {}}
+      {...buttonProps}
     >
       {children}
     </button>

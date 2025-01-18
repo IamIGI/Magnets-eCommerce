@@ -1,17 +1,14 @@
 import { PriceAndSizes } from '../api/magnetsServer/generated';
-import { ListItem } from '../interfaces/cart';
 
 function calculatePrice(
   priceAndSizes: PriceAndSizes[],
-  QUANTITY_ARR: ListItem[],
-  sizeId: string,
-  quantityId: string
+  quantity: number,
+  sizeId: string
 ) {
   const sizePrice = priceAndSizes.find((s) => s.id === sizeId)?.price;
-  const quantityValue = QUANTITY_ARR.find((q) => q.id === quantityId)?.desc;
 
-  if (sizePrice && quantityValue) {
-    return sizePrice * Number(quantityValue);
+  if (sizePrice) {
+    return sizePrice * quantity;
   }
   return 0;
 }

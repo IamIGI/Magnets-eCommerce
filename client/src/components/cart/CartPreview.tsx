@@ -1,36 +1,18 @@
-import { useEffect, useRef, useState } from 'react';
-import { CART_DATA } from '../../mocks/PRODUCTS_MOCKS';
+import { useEffect, useRef } from 'react';
 import StyledButton from '../ui/styledButton/StyledButton';
 import c from './CartPreview.module.scss';
 import CartItem from './cartItem/CartItem';
-import {
-  Cart as CartInterface,
-  CartItem as CartItemInterface,
-  ListItem,
-} from '../../interfaces/cart';
 import StyledIcon from '../ui/styledIcon/StyledIcon';
 import Price from '../ui/price/Price';
+import { useAppSelector } from '../../state/store';
 
 interface CartProps {
   isVisible: boolean;
   onCloseCart: () => void;
 }
 const Cart: React.FC<CartProps> = ({ isVisible, onCloseCart }) => {
-  const [data, setData] = useState<CartInterface>(() => {
-    return {
-      ...CART_DATA,
-      items: CART_DATA.items.map((item) => {
-        return { ...item, price: updatePrice(item) };
-      }),
-      totalPrice: cartTotalPrice({
-        ...CART_DATA,
-        items: CART_DATA.items.map((item) => {
-          return { ...item, price: updatePrice(item) };
-        }),
-      }),
-    };
-  });
   const cartRef = useRef<HTMLDivElement>(null);
+  const basketData = useAppSelector((state) => state.basket);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -46,49 +28,9 @@ const Cart: React.FC<CartProps> = ({ isVisible, onCloseCart }) => {
     };
   });
 
-  function updatePrice(itemData: CartItemInterface) {
-    return itemData.size.price! * Number(itemData.quantity.desc);
-  }
+  function handleSizeChange() {}
 
-  function cartTotalPrice(cartData: CartInterface) {
-    return cartData.items.reduce((acc, item) => acc + item.price, 0);
-  }
-
-  function handleSizeChange(itemId: string, size: ListItem) {
-    setData((prevData) => {
-      const newItems = prevData.items.map((item) => {
-        if (item.id === itemId) {
-          item.size = size;
-          item.price = updatePrice(item);
-          return { ...item };
-        }
-        return item;
-      });
-      return {
-        ...prevData,
-        items: newItems,
-        totalPrice: cartTotalPrice({ ...prevData, items: newItems }),
-      };
-    });
-  }
-
-  function handleQuantityChange(itemId: string, quantity: ListItem) {
-    setData((prevData) => {
-      const newItems = prevData.items.map((item) => {
-        if (item.id === itemId) {
-          item.quantity = quantity;
-          item.price = updatePrice(item);
-          return { ...item };
-        }
-        return item;
-      });
-      return {
-        ...prevData,
-        items: newItems,
-        totalPrice: cartTotalPrice({ ...prevData, items: newItems }),
-      };
-    });
-  }
+  function handleQuantityChange() {}
 
   return (
     <>
@@ -112,10 +54,10 @@ const Cart: React.FC<CartProps> = ({ isVisible, onCloseCart }) => {
             />
           </div>
           <div className={c.productsList}>
-            {data.items.map((item) => (
+            {basketData.basket.map((basketItem) => (
               <CartItem
-                key={item.id}
-                itemData={item}
+                key={basketItem.product.id}
+                basketItem={basketItem}
                 onSizeChange={handleSizeChange}
                 onQuantityChange={handleQuantityChange}
               />
@@ -124,7 +66,7 @@ const Cart: React.FC<CartProps> = ({ isVisible, onCloseCart }) => {
         </div>
         <StyledButton upperCase={true}>
           <span style={{ paddingRight: '5px' }}>Do koszka </span>
-          <Price price={data.totalPrice} as="p" />
+          <Price price={basketData.totalPrice} as="p" />
         </StyledButton>
       </div>
     </>

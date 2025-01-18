@@ -1,4 +1,5 @@
 import { ImgSize } from '../interfaces/products';
+import { BasketItem } from '../state/features/basket/basket.slice';
 
 export const productsList = [
   {
@@ -80,3 +81,55 @@ export const IMG_SIZES_ARR: ImgSize[] = [
 //   totalQuantity: CART_ITEMS_DATA.length,
 //   totalPrice: CART_ITEMS_DATA.reduce((acc, item) => acc + item.price, 0),
 // };
+
+export const BASKET_MOCK: BasketItem[] = [
+  {
+    product: {
+      id: '1',
+      name: 'Product A',
+      description: '',
+      category: {},
+      imgNames: [],
+      isUserImageRequired: false,
+      createDate: '',
+      editDate: '',
+      isRemoved: false,
+      pricesAndSizes: [],
+    },
+    priceAndSizes: [
+      {
+        priceAndSizeData: { id: 'size1', size: 'Small', price: 10 },
+        quantity: 2,
+        totalPrice: 20,
+      },
+      {
+        priceAndSizeData: { id: 'size2', size: 'Large', price: 20 },
+        quantity: 3,
+        totalPrice: 60,
+      },
+    ],
+    totalPrice: 80,
+  },
+  {
+    product: {
+      id: '2',
+      name: 'Product B',
+      description: '',
+      category: {},
+      imgNames: [],
+      isUserImageRequired: false,
+      createDate: '',
+      editDate: '',
+      isRemoved: false,
+      pricesAndSizes: [],
+    },
+    priceAndSizes: [
+      {
+        priceAndSizeData: { id: 'size1', size: 'Medium', price: 15 },
+        quantity: 1,
+        totalPrice: 15,
+      },
+    ],
+    totalPrice: 15,
+  },
+];
