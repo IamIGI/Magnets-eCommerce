@@ -1,16 +1,18 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { PriceAndSizes, Product } from '../../../api/magnetsServer/generated';
 
-interface CartState {
-  basket: {
-    product: Product;
-    priceAndSizes: {
-      priceAndSize: PriceAndSizes;
-      quantity: number;
-      totalPrice: number;
-    }[];
+interface BasketItem {
+  product: Product;
+  priceAndSizes: {
+    priceAndSize: PriceAndSizes;
+    quantity: number;
     totalPrice: number;
   }[];
+  totalPrice: number;
+}
+
+interface CartState {
+  basket: BasketItem[];
   totalQuantity: number;
   totalPrice: number;
 }
@@ -148,6 +150,58 @@ const basketSlice = createSlice({
 
           priceAndSizeItem.quantity = quantity;
           priceAndSizeItem.totalPrice = pricePerUnit * quantity;
+        }
+      }
+    },
+    // Change the size of an item in the basket
+    changeSize(
+      state,
+      action: PayloadAction<{
+        id: string;
+        oldPriceAndSizeId: string;
+        newPriceAndSizeId: string;
+      }>
+    ) {
+      const { id, oldPriceAndSizeId, newPriceAndSizeId } = action.payload;
+      const basketItem = state.basket.find((item) => item.product.id === id);
+
+      if (basketItem) {
+        const oldSizeIndex = basketItem.priceAndSizes.findIndex(
+          (ps) => ps.priceAndSize.id === oldPriceAndSizeId
+        );
+        const newPriceAndSize = basketItem.product.pricesAndSizes.find(
+          (ps) => ps.id === newPriceAndSizeId
+        );
+
+        if (oldSizeIndex && newPriceAndSize) {
+          const oldSize = basketItem.priceAndSizes[oldSizeIndex];
+          // Check if the new size already exists in the basket
+          const existingNewSize = basketItem.priceAndSizes.find(
+            (ps) => ps.priceAndSize.id === newPriceAndSizeId
+          );
+
+          if (existingNewSize) {
+            //Update existing size withe new size quantity and recalculate price
+            existingNewSize.quantity += oldSize.quantity;
+            existingNewSize.totalPrice +=
+              oldSize.quantity * newPriceAndSize.price;
+
+            //remove old size
+            basketItem.priceAndSizes.splice(oldSizeIndex, 1);
+          } else {
+            oldSize.priceAndSize = newPriceAndSize;
+            oldSize.totalPrice = oldSize.quantity * newPriceAndSize.price;
+          }
+
+          basketItem.totalPrice = basketItem.priceAndSizes.reduce(
+            (acc, size) => acc + size.totalPrice,
+            0
+          );
+
+          state.totalPrice = state.basket.reduce(
+            (acc, item) => acc + item.totalPrice,
+            0
+          );
         }
       }
     },
