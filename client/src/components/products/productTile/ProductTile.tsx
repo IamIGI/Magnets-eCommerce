@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import c from './ProductTile.module.scss';
 import { NavigationLinks } from '../../views/Root';
 import { useAppDispatch } from '../../../state/store';
-import { productSliceActions } from '../../../state/features/products/productsSlice';
+import { productSliceActions } from '../../../state/features/products/product.slice';
 
 interface ProductTileProps {
   title: string;

@@ -1,29 +1,26 @@
-import {
-  CartItem as CartItemsInterface,
-  ListItem,
-} from '../../../interfaces/cart';
 import { IMG_SIZES_ARR } from '../../../mocks/PRODUCTS_MOCKS';
+import { BasketItem } from '../../../state/features/basket/basket.slice';
 import Price from '../../ui/price/Price';
 import c from './CartItem.module.scss';
 
 interface CartItemProps {
-  itemData: CartItemsInterface;
-  onSizeChange: (itemId: string, size: ListItem) => void;
-  onQuantityChange: (itemId: string, quantity: ListItem) => void;
+  basketItem: BasketItem;
+  onSizeChange: () => void;
+  onQuantityChange: () => void;
 }
 
-const CartItem: React.FC<CartItemProps> = ({ itemData }) => {
+const CartItem: React.FC<CartItemProps> = ({ basketItem }) => {
   return (
     <div className={c.wrapper}>
       <img
         className={c.itemImage}
-        src={`products/${itemData.imgName}`}
-        alt={itemData.id}
+        src={`/products/${basketItem.product.imgNames[0]}`}
+        alt={basketItem.product.imgNames[0]}
       />
       <div className={c.contentWrapper}>
         <div className={c.titleWrapper}>
-          <h5>{itemData.name}</h5>
-          <Price price={itemData.price} as="h5" />
+          <h5>{basketItem.product.name}</h5>
+          <Price price={basketItem.totalPrice} as="h5" />
         </div>
 
         <p>Rozmiar: {IMG_SIZES_ARR[0].desc}</p>

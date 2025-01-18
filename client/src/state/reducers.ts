@@ -1,6 +1,6 @@
 import { combineReducers } from '@reduxjs/toolkit';
-import productsReducer from './features/products/productsSlice';
-import basketReducer from './features/basket/basketSlice';
+import productsReducer from './features/products/product.slice';
+import basketReducer from './features/basket/basket.slice';
 
 const storeReducers = combineReducers({
   products: productsReducer,

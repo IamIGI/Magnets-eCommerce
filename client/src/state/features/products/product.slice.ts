@@ -52,28 +52,9 @@ const productsSlice = createSlice({
   reducers: {
     setSelectedProduct: (state, action: PayloadAction<string>) => {
       const id = action.payload;
-
       return {
         ...state,
         selectedProduct: state.products.find((p) => p.id === id) || null,
-      };
-    },
-    inc: (state) => {
-      return {
-        ...state,
-        counter: state.counter + 1,
-      };
-    },
-    dec: (state) => {
-      return {
-        ...state,
-        counter: state.counter - 1,
-      };
-    },
-    incByAmount: (state, action: PayloadAction<number>) => {
-      return {
-        ...state,
-        counter: state.counter + action.payload,
       };
     },
   },

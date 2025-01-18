@@ -4,7 +4,7 @@ import Advertisement from '../../components/sections/advertisement/Advertisement
 import SupportSection from '../../components/sections/SupportSection/SupportSection';
 import c from './Home.module.scss';
 import { useAppDispatch, useAppSelector } from '../../state/store';
-import { fetchProducts } from '../../state/features/products/productsSlice';
+import { fetchProducts } from '../../state/features/products/product.slice';
 
 const Home = () => {
   const products = useAppSelector((state) => state.products);
