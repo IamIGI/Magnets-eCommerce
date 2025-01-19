@@ -15,6 +15,8 @@ tags:
     description: Endpoints related to managing product categories, such as adding, retrieving, and updating them.
   - name: Prices and Sizes
     description: Endpoints related to managing product prices and sizes. Each sizes have own price
+  - name: Basket
+    description: Endpoints related to basket management, including create, update, and remove basket.
 
 paths:
   # ------------------------- Products requests ---------------
@@ -254,7 +256,7 @@ paths:
   /prices-sizes:
     get:
       tags:
-        - Product and Sizes
+        - Prices and Sizes
       summary: Get a list of Prices and sizes objects
       responses:
         '200':
@@ -267,7 +269,7 @@ paths:
                   $ref: '#/components/schemas/PriceAndSizes'
     post:
       tags:
-        - Product and Sizes
+        - Prices and Sizes
       summary: Add new PriceAndSizes data
       requestBody:
         description: PriceAndSizes data was added
@@ -291,8 +293,8 @@ paths:
   /prices-sizes/{id}:
     put:
       tags:
-        - Product and Sizes
-      summary: Update a product and sizes object
+        - Prices and Sizes
+      summary: Update a price and sizes object
       parameters:
         - name: id
           in: path
@@ -322,7 +324,7 @@ paths:
           description: Product category not found
     delete:
       tags:
-        - Product and Sizes
+        - Prices and Sizes
       summary: Delete a prices and sizes data
       parameters:
         - name: id
@@ -337,6 +339,85 @@ paths:
         '404':
           description: Product category not found
 
+  /basket:
+    post:
+      tags:
+        - Basket
+      summary: Create a new basket
+      description: Creates a new basket with the provided data.
+      operationId: createBasket
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BasketUpdateData'
+      responses:
+        '201':
+          description: Basket successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Basket'
+        '400':
+          description: Invalid input data
+        '500':
+          description: Internal server error
+
+  /basket/{id}:
+    put:
+      tags:
+        - Basket
+      summary: Update an existing basket
+      description: Updates an existing basket with the provided data.
+      operationId: updateBasket
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the basket to update.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BasketUpdateData'
+      responses:
+        '200':
+          description: Basket successfully updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Basket'
+        '400':
+          description: Invalid input data or missing parameters
+        '404':
+          description: Basket not found
+        '500':
+          description: Internal server error
+
+    delete:
+      tags:
+        - Basket
+      summary: Remove a basket
+      description: Removes an existing basket by its identifier.
+      operationId: deleteBasket
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of the basket to delete.
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Basket successfully deleted
+        '404':
+          description: Basket not found
+        '500':
+          description: Internal server error
 components:
   schemas:
     Product:
@@ -524,3 +605,91 @@ components:
         - _id: dwa-12daw-123
         - categoryName: custom
         - description: User upload own photo
+    BasketItem:
+      type: object
+      description: Object represents user product in basket, with quantity of items and totalPrice
+      properties:
+        product:
+          $ref: '#/components/schemas/Product'
+        princeAndSizes:
+          type: array
+          description: User selected sizes with quantity and totalPrice for given product
+          items:
+            type: object
+            properties:
+              priceAndSizeData:
+                $ref: '#/components/schemas/PriceAndSizes'
+              quantity:
+                type: number
+                description: Number of given product
+              totalPrice:
+                type: number
+                description: Total price of the selected size
+        totalPrice:
+          type: number
+          description: Total price for product
+    BasketItemUpdateData:
+      type: object
+      description: Object represents user product in basket, with quantity of items and totalPrice
+      properties:
+        productId:
+          type: string
+          description: Product identifier
+        princeAndSizes:
+          type: array
+          description: User selected sizes with quantity and totalPrice for given product
+          items:
+            type: object
+            properties:
+              priceAndSizeId:
+                type: string
+                description: Price and size identifier
+              quantity:
+                type: number
+                description: Number of given product
+              totalPrice:
+                type: number
+                description: Total price of the selected size
+        totalPrice:
+          type: number
+          description: Total price for product
+    Basket:
+      type: object
+      description: User basket data, with selected products
+      properties:
+        _id:
+          type: string
+          description: The unique identifier for a product.
+          x-originalName: _id
+        userId:
+          type: string
+          description: User identifier
+        basket:
+          type: array
+          description: User products
+          items:
+            $ref: '#/components/schemas/BasketItem'
+        totalQuantity:
+          type: number
+          description: Total numbers of magnets that will be bought
+        totalPrice:
+          type: number
+          description: Total price of the purchase
+    BasketUpdateData:
+      type: object
+      description: User basket data, with selected products
+      properties:
+        userId:
+          type: string
+          description: User identifier
+        basket:
+          type: array
+          description: User products
+          items:
+            $ref: '#/components/schemas/BasketItemUpdateData'
+        totalQuantity:
+          type: number
+          description: Total numbers of magnets that will be bought
+        totalPrice:
+          type: number
+          description: Total price of the purchase
