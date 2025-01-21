@@ -646,9 +646,17 @@ components:
               totalPrice:
                 type: number
                 description: Total price of the selected size
+            required:
+              - priceAndSizeItem
+              - quantity
+              - totalPrice
         totalPrice:
           type: number
           description: Total price for product
+      required:
+        - product
+        - priceAndSizesArray
+        - totalPrice
     BasketItemUpdateData:
       type: object
       description: Object represents user product in basket, with quantity of items and totalPrice
@@ -671,9 +679,17 @@ components:
               totalPrice:
                 type: number
                 description: Total price of the selected size
+            required:
+              - priceAndSizeItemId
+              - quantity
+              - totalPrice
         totalPrice:
           type: number
           description: Total price for product
+      required:
+        - productId,
+        - priceAndSizesArray
+        - totalPrice
     Basket:
       type: object
       description: User basket data, with selected products
@@ -696,6 +712,12 @@ components:
         totalPrice:
           type: number
           description: Total price of the purchase
+      required:
+        - _id
+        - userId
+        - basket
+        - totalQuantity
+        - totalPrice
     BasketUpdateData:
       type: object
       description: User basket data, with selected products
@@ -714,3 +736,8 @@ components:
         totalPrice:
           type: number
           description: Total price of the purchase
+      required:
+        - userId
+        - basket
+        - totalQuantity
+        - totalPrice
