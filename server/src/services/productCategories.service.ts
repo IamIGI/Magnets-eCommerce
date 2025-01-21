@@ -1,4 +1,3 @@
-import { ProductCategory } from '../api/magnetsServer/generated';
 import { ProductCategoryPayload } from '../controllers/productCategories.controller';
 import ProductCategoryModel from '../models/ProductCategories.model';
 

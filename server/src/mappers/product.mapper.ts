@@ -1,24 +1,22 @@
-import { Product } from '../api/magnetsServer/generated';
-import { PriceAndSizesDocument } from '../models/PricesAndSizes.model';
-import { ProductCategoryDocument } from '../models/ProductCategories.model';
+import {
+  PriceAndSizes,
+  Product,
+  ProductCategory,
+} from '../api/magnetsServer/generated';
 import { ProductDocument } from '../models/Products.model';
 
-function mapProductDocumentToProduct(
-  product: ProductDocument,
-  category: ProductCategoryDocument,
-  pricesAndSizes: PriceAndSizesDocument[]
-): Product {
+function mapProductDocumentToProduct(product: ProductDocument): Product {
   return {
     _id: product._id,
     name: product.name,
-    category: category,
+    category: product.categoryId as unknown as ProductCategory,
     createDate: product.createDate,
     editDate: product.editDate,
     description: product.description,
     imgNames: product.imgNames,
     isUserImageRequired: product.isUserImageRequired,
     isRemoved: product.isRemoved,
-    pricesAndSizes: pricesAndSizes,
+    pricesAndSizes: product.pricesAndSizesIds as unknown as PriceAndSizes[],
   } as Product;
 }
 

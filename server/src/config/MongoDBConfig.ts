@@ -14,6 +14,7 @@ export enum DB_COLLECTIONS {
   Products = 'Products',
   PricesAndSizes = 'PricesAndSizes',
   ProductCategories = 'ProductCategories',
+  Baskets = 'Baskets',
 }
 
 const connectDB = async () => {

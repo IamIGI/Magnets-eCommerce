@@ -1,21 +1,30 @@
-function validateId(id: string | null) {
+function validateId(id: string | null, idName?: string) {
   if (!id || id.length !== 24) {
-    throw new Error(`Provided ID is not valid: ${id}`);
+    throw new Error(
+      ` ${idName && `${idName} ||`} Provided ID is not valid: ${id}`
+    );
   }
 }
 
 function isValidPayload<T>(
   payload: Partial<T>,
-  requiredKeys: Array<keyof T>
+  requiredKeys: Array<keyof T>,
+  payloadName?: string
 ): void {
   if (!payload || typeof payload !== 'object') {
-    throw new Error('No payload provided');
+    throw new Error(
+      `${payloadName && `${payloadName} ||`} No payload provided`
+    );
   }
 
   for (const key of requiredKeys) {
     // Check for missing keys
     if (!(key in payload)) {
-      throw new Error(`Missing required key: ${String(key)}`);
+      throw new Error(
+        `${payloadName && `${payloadName} ||`} Missing required key: ${String(
+          key
+        )}`
+      );
     }
 
     //Check for missing key value
@@ -24,7 +33,11 @@ function isValidPayload<T>(
       payload[key] === undefined ||
       (typeof payload[key] === 'string' && payload[key].length === 0)
     ) {
-      throw new Error(`Key '${String(key)}' is null or undefined in payload. `);
+      throw new Error(
+        `${payloadName && `${payloadName} ||`} Key '${String(
+          key
+        )}' is null or undefined in payload. `
+      );
     }
   }
 }
