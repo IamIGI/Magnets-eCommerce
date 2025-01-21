@@ -1,16 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { PriceAndSizes, Product } from '../../../api/magnetsServer/generated';
+import { BasketItem, Product } from '../../../api/magnetsServer/generated';
 import basketUtils from './basket.utils';
-
-export interface BasketItem {
-  product: Product;
-  priceAndSizes: {
-    priceAndSizeData: PriceAndSizes;
-    quantity: number;
-    totalPrice: number;
-  }[];
-  totalPrice: number;
-}
 
 interface BasketState {
   basket: BasketItem[];
@@ -55,20 +45,20 @@ const basketSlice = createSlice({
       }
 
       const existingProduct = state.basket.find(
-        (item) => item.product.id === product.id
+        (basketItem) => basketItem.product.id === product.id
       );
 
       if (existingProduct) {
-        const existingSize = existingProduct.priceAndSizes.find(
-          (ps) => ps.priceAndSizeData.id === priceAndSizeId
+        const existingSize = existingProduct.priceAndSizesArray.find(
+          (ps) => ps.priceAndSizeItem.id === priceAndSizeId
         );
 
         if (existingSize) {
           existingSize.quantity += quantity;
           existingSize.totalPrice += selectedPriceAndSize.price * quantity;
         } else {
-          existingProduct.priceAndSizes.push({
-            priceAndSizeData: selectedPriceAndSize,
+          existingProduct.priceAndSizesArray.push({
+            priceAndSizeItem: selectedPriceAndSize,
             quantity,
             totalPrice: selectedPriceAndSize.price * quantity,
           });
@@ -78,9 +68,9 @@ const basketSlice = createSlice({
       } else {
         state.basket.push({
           product,
-          priceAndSizes: [
+          priceAndSizesArray: [
             {
-              priceAndSizeData: selectedPriceAndSize,
+              priceAndSizeItem: selectedPriceAndSize,
               quantity,
               totalPrice: selectedPriceAndSize.price * quantity,
             },
@@ -104,18 +94,18 @@ const basketSlice = createSlice({
 
       if (productIndex !== -1) {
         const product = state.basket[productIndex];
-        const sizeIndex = product.priceAndSizes.findIndex(
-          (ps) => ps.priceAndSizeData.id === priceAndSizeId
+        const sizeIndex = product.priceAndSizesArray.findIndex(
+          (ps) => ps.priceAndSizeItem.id === priceAndSizeId
         );
 
         if (sizeIndex !== -1) {
-          const size = product.priceAndSizes[sizeIndex];
+          const size = product.priceAndSizesArray[sizeIndex];
           state.totalQuantity -= size.quantity;
           state.totalPrice -= size.totalPrice;
 
-          product.priceAndSizes.splice(sizeIndex, 1);
+          product.priceAndSizesArray.splice(sizeIndex, 1);
 
-          if (product.priceAndSizes.length === 0) {
+          if (product.priceAndSizesArray.length === 0) {
             state.basket.splice(productIndex, 1);
           } else {
             product.totalPrice -= size.totalPrice;
@@ -147,8 +137,8 @@ const basketSlice = createSlice({
           );
         }
 
-        const priceAndSizeItem = basketItem.priceAndSizes.find(
-          (ps) => ps.priceAndSizeData.id === priceAndSizeId
+        const priceAndSizeItem = basketItem.priceAndSizesArray.find(
+          (ps) => ps.priceAndSizeItem.id === priceAndSizeId
         );
 
         if (priceAndSizeItem) {
@@ -175,18 +165,18 @@ const basketSlice = createSlice({
       const basketItem = state.basket.find((item) => item.product.id === id);
 
       if (basketItem) {
-        const oldSizeIndex = basketItem.priceAndSizes.findIndex(
-          (ps) => ps.priceAndSizeData.id === oldPriceAndSizeId
+        const oldSizeIndex = basketItem.priceAndSizesArray.findIndex(
+          (ps) => ps.priceAndSizeItem.id === oldPriceAndSizeId
         );
         const newPriceAndSize = basketItem.product.pricesAndSizes.find(
           (ps) => ps.id === newPriceAndSizeId
         );
 
         if (oldSizeIndex && newPriceAndSize) {
-          const oldSize = basketItem.priceAndSizes[oldSizeIndex];
+          const oldSize = basketItem.priceAndSizesArray[oldSizeIndex];
           // Check if the new size already exists in the basket
-          const existingNewSize = basketItem.priceAndSizes.find(
-            (ps) => ps.priceAndSizeData.id === newPriceAndSizeId
+          const existingNewSize = basketItem.priceAndSizesArray.find(
+            (ps) => ps.priceAndSizeItem.id === newPriceAndSizeId
           );
 
           if (existingNewSize) {
@@ -196,13 +186,13 @@ const basketSlice = createSlice({
               oldSize.quantity * newPriceAndSize.price;
 
             //remove old size
-            basketItem.priceAndSizes.splice(oldSizeIndex, 1);
+            basketItem.priceAndSizesArray.splice(oldSizeIndex, 1);
           } else {
-            oldSize.priceAndSizeData = newPriceAndSize;
+            oldSize.priceAndSizeItem = newPriceAndSize;
             oldSize.totalPrice = oldSize.quantity * newPriceAndSize.price;
           }
 
-          basketItem.totalPrice = basketItem.priceAndSizes.reduce(
+          basketItem.totalPrice = basketItem.priceAndSizesArray.reduce(
             (acc, size) => acc + size.totalPrice,
             0
           );
