@@ -365,6 +365,27 @@ paths:
           description: Internal server error
 
   /basket/{id}:
+    get:
+      tags:
+        - Basket
+      summary: Get user basket
+      description: Get user basket by userId
+      operationId: getBasket
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique identifier of user
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Basket successfully deleted
+        '404':
+          description: Basket not found
+        '500':
+          description: Internal server error
+
     put:
       tags:
         - Basket
@@ -611,13 +632,13 @@ components:
       properties:
         product:
           $ref: '#/components/schemas/Product'
-        princeAndSizes:
+        priceAndSizesArray:
           type: array
           description: User selected sizes with quantity and totalPrice for given product
           items:
             type: object
             properties:
-              priceAndSizeData:
+              priceAndSizeItem:
                 $ref: '#/components/schemas/PriceAndSizes'
               quantity:
                 type: number
@@ -635,13 +656,13 @@ components:
         productId:
           type: string
           description: Product identifier
-        princeAndSizes:
+        priceAndSizesArray:
           type: array
           description: User selected sizes with quantity and totalPrice for given product
           items:
             type: object
             properties:
-              priceAndSizeId:
+              priceAndSizeItemId:
                 type: string
                 description: Price and size identifier
               quantity:
