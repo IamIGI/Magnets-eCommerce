@@ -11,7 +11,6 @@ body {
 }
 
 body {
-  font-family: Arial, sans-serif;
   font-family: 'Merriweather', serif;
   font-weight: 500;
   // font-family: 'Playfair Display', Arial, sans-serif;
@@ -209,4 +208,17 @@ li {
   filter: invert(55%) sepia(0%) saturate(453%) hue-rotate(148deg)
     brightness(91%) contrast(82%);
   // color: black;
+}
+
+.hover-effect {
+  transition: all 0.2s;
+  &:hover {
+    scale: 1.2;
+  }
+
+  @media (max-width: 500px) {
+    &:hover {
+      scale: 1;
+    }
+  }
 }

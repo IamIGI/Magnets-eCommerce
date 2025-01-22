@@ -15,7 +15,7 @@ const basketSchema = new mongoose.Schema({
       },
       priceAndSizesArray: [
         {
-          priceAndSizeItemId: {
+          itemId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: DB_COLLECTIONS.PricesAndSizes,
             required: true,

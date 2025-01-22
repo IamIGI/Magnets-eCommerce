@@ -1,10 +1,10 @@
-import { BasketItem } from './basket.slice';
+import { BasketItem } from '../../../api/magnetsServer/generated';
 
 function calculateTotalQuantity(basketItems: BasketItem[]): number {
   return basketItems.reduce(
     (basketQuantity, basketItem) =>
       basketQuantity +
-      basketItem.priceAndSizes.reduce(
+      basketItem.priceAndSizesArray.reduce(
         (psQuantity, ps) => psQuantity + ps.quantity,
         0
       ),
@@ -12,19 +12,50 @@ function calculateTotalQuantity(basketItems: BasketItem[]): number {
   );
 }
 
-function calculateTotalPrice(basketItems: BasketItem[]): number {
+function calculateTotalBasketPrice(basketItems: BasketItem[]): number {
   return basketItems.reduce(
     (basketPrice, basketItem) =>
       basketPrice +
-      basketItem.priceAndSizes.reduce(
-        (psPrice, ps) => psPrice + ps.quantity * ps.priceAndSizeData.price,
+      basketItem.priceAndSizesArray.reduce(
+        (psPrice, ps) => psPrice + ps.quantity * ps.item.price,
         0
       ),
     0
   );
 }
 
+function calculateTotalBasketItemPrice(basketItem: BasketItem): number {
+  return basketItem.priceAndSizesArray.reduce(
+    (itemPrice, psItem) => itemPrice + psItem.totalPrice,
+    0
+  );
+}
+
+function getNewItemQuantity(
+  quantity_arr: number[],
+  previousQuantity: number,
+  operation: '+' | '-'
+): number {
+  const previousQuantityIndex = quantity_arr.findIndex(
+    (q) => q === previousQuantity
+  );
+
+  if (previousQuantityIndex !== -1) {
+    if (operation === '-' && previousQuantityIndex > 0) {
+      return quantity_arr[previousQuantityIndex - 1];
+    }
+    if (operation === '+' && previousQuantityIndex < quantity_arr.length - 1)
+      return quantity_arr[previousQuantityIndex + 1];
+  } else {
+    console.error('Could not found given quantity in array');
+  }
+
+  return previousQuantity;
+}
+
 export default {
   calculateTotalQuantity,
-  calculateTotalPrice,
+  calculateTotalBasketPrice,
+  getNewItemQuantity,
+  calculateTotalBasketItemPrice,
 };

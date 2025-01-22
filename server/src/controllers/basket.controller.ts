@@ -21,7 +21,7 @@ const REQUIRED_KEYS_BASKET_ITEM: Array<keyof BasketItemUpdateData> = [
 
 const REQUIRED_KEYS_PRICE_AND_SIZES_ARRAY: Array<
   keyof BasketItemUpdateDataPriceAndSizesArrayInner
-> = ['priceAndSizeItemId', 'quantity', 'totalPrice'];
+> = ['itemId', 'quantity', 'totalPrice'];
 
 const getByUserId = async (req: Request, res: Response) => {
   try {
@@ -36,7 +36,6 @@ const getByUserId = async (req: Request, res: Response) => {
 const add = async (req: Request, res: Response) => {
   try {
     const payload = req.body as BasketUpdateData;
-    console.log(payload);
 
     //Valid payloads
     validateRequestUtil.isValidPayload<BasketUpdateData>(
@@ -61,8 +60,8 @@ const add = async (req: Request, res: Response) => {
     });
     validateRequestUtil.validateId(payload.userId!, 'UserId');
 
-    const newCategory = await basketsService.add(payload);
-    res.status(201).json(newCategory);
+    const newBasket = await basketsService.add(payload);
+    res.status(201).json(newBasket);
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }

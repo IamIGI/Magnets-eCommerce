@@ -12,7 +12,7 @@ const getByUserId = async (id: string) => {
         model: DB_COLLECTIONS.Products,
       })
       .populate({
-        path: 'basket.priceAndSizesArray.priceAndSizeItemId',
+        path: 'basket.priceAndSizesArray.itemId',
         model: DB_COLLECTIONS.PricesAndSizes,
       });
 
@@ -51,7 +51,7 @@ const updateByUserId = async (id: string, data: BasketUpdateData) => {
         model: DB_COLLECTIONS.Products,
       })
       .populate({
-        path: 'basket.priceAndSizesArray.priceAndSizeItemId',
+        path: 'basket.priceAndSizesArray.itemId',
         model: DB_COLLECTIONS.PricesAndSizes,
       });
   } catch (err: any) {

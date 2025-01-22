@@ -2,7 +2,7 @@
 
 import {
   Configuration,
-  ProductAndSizesApi,
+  PricesAndSizesApi,
   ProductCategoriesApi,
   ProductsApi,
   ResponseError,
@@ -11,7 +11,7 @@ import {
 class MagnetsServerApi {
   public productService: ProductsApi;
   public productCategoriesService: ProductCategoriesApi;
-  public priceAndSizeService: ProductAndSizesApi;
+  public priceAndSizeService: PricesAndSizesApi;
 
   constructor() {
     const SERVER_URL =
@@ -31,7 +31,7 @@ class MagnetsServerApi {
       new ProductCategoriesApi(configuration)
     );
     this.priceAndSizeService = errorHandler(
-      new ProductAndSizesApi(configuration)
+      new PricesAndSizesApi(configuration)
     );
 
     function errorHandler(service: any) {

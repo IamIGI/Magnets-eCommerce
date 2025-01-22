@@ -1,0 +1,41 @@
+.wrapper {
+  $borderRadius: 4px;
+  $borderColor: gray;
+  $heightSize: 1.9rem;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 150px;
+  max-height: $heightSize;
+  min-height: $heightSize;
+  border: 1px solid $borderColor;
+  border-radius: $borderRadius;
+
+  .value {
+    width: 60%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  button {
+    width: 20%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: calc($heightSize - 2px);
+
+    &:first-child {
+      border-top-left-radius: $borderRadius;
+      border-bottom-left-radius: $borderRadius;
+      border-right: 1px solid $borderColor;
+    }
+
+    &:last-child {
+      border-top-right-radius: $borderRadius;
+      border-bottom-right-radius: $borderRadius;
+      border-left: 1px solid $borderColor;
+    }
+  }
+}
