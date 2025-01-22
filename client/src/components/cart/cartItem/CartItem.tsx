@@ -1,15 +1,23 @@
-import { IMG_SIZES_ARR } from '../../../mocks/PRODUCTS_MOCKS';
-import { BasketItem } from '../../../state/features/basket/basket.slice';
+import { BasketItem } from '../../../api/magnetsServer/generated';
 import Price from '../../ui/price/Price';
+import StyledQuantityButton from '../../ui/styledQuantityButton/StyledQuantityButton';
 import c from './CartItem.module.scss';
 
 interface CartItemProps {
   basketItem: BasketItem;
-  onSizeChange: () => void;
-  onQuantityChange: () => void;
+  onQuantityChange: (
+    operation: '+' | '-',
+    productId: string,
+    priceAndSizeId: string
+  ) => void;
+  onSizeRemove: (productId: string, priceAndSizeId: string) => void;
 }
 
-const CartItem: React.FC<CartItemProps> = ({ basketItem }) => {
+const CartItem: React.FC<CartItemProps> = ({
+  basketItem,
+  onQuantityChange,
+  onSizeRemove,
+}) => {
   return (
     <div className={c.wrapper}>
       <img
@@ -23,8 +31,29 @@ const CartItem: React.FC<CartItemProps> = ({ basketItem }) => {
           <Price price={basketItem.totalPrice} as="h5" />
         </div>
 
-        <p>Rozmiar: {IMG_SIZES_ARR[0].desc}</p>
-        <p>Ilość: 10</p>
+        {basketItem.priceAndSizesArray.map((psItem) => (
+          <div className={c.actionWrapper}>
+            <h5> {psItem.item.size}</h5>
+            <StyledQuantityButton
+              value={psItem.quantity.toString()}
+              onValueChange={(operation) =>
+                onQuantityChange(
+                  operation,
+                  basketItem.product.id,
+                  psItem.item.id
+                )
+              }
+            />
+            <button
+              className={`${c.removeIcon} hover-effect`}
+              onClick={() =>
+                onSizeRemove(basketItem.product.id, psItem.item.id)
+              }
+            >
+              <img src={'/svg/buttons/delete.svg'} alt="delete" />
+            </button>
+          </div>
+        ))}
       </div>
       <div className={c.actions}></div>
     </div>

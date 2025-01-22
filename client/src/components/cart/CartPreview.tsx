@@ -4,7 +4,8 @@ import c from './CartPreview.module.scss';
 import CartItem from './cartItem/CartItem';
 import StyledIcon from '../ui/styledIcon/StyledIcon';
 import Price from '../ui/price/Price';
-import { useAppSelector } from '../../state/store';
+import { useAppDispatch, useAppSelector } from '../../state/store';
+import { basketSliceActions } from '../../state/features/basket/basket.slice';
 
 interface CartProps {
   isVisible: boolean;
@@ -13,6 +14,7 @@ interface CartProps {
 const Cart: React.FC<CartProps> = ({ isVisible, onCloseCart }) => {
   const cartRef = useRef<HTMLDivElement>(null);
   const basketData = useAppSelector((state) => state.basket);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -28,9 +30,24 @@ const Cart: React.FC<CartProps> = ({ isVisible, onCloseCart }) => {
     };
   });
 
-  function handleSizeChange() {}
+  function handleRemoveSize(productId: string, priceAndSizeId: string) {
+    dispatch(basketSliceActions.removeSize({ productId, priceAndSizeId }));
+  }
 
-  function handleQuantityChange() {}
+  function handleQuantityChange(
+    operation: '+' | '-',
+    productId: string,
+    priceAndSizeId: string
+  ) {
+    console.log(basketData);
+    dispatch(
+      basketSliceActions.changeQuantity({
+        productId,
+        priceAndSizeId,
+        operation,
+      })
+    );
+  }
 
   return (
     <>
@@ -58,7 +75,7 @@ const Cart: React.FC<CartProps> = ({ isVisible, onCloseCart }) => {
               <CartItem
                 key={basketItem.product.id}
                 basketItem={basketItem}
-                onSizeChange={handleSizeChange}
+                onSizeRemove={handleRemoveSize}
                 onQuantityChange={handleQuantityChange}
               />
             ))}

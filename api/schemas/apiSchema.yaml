@@ -512,7 +512,7 @@ components:
             category: 'custom'
     ProductUpdateData:
       type: object
-      description: Paylod to update product data
+      description: Payload to update product data
       properties:
         name:
           type: string
@@ -638,7 +638,7 @@ components:
           items:
             type: object
             properties:
-              priceAndSizeItem:
+              item:
                 $ref: '#/components/schemas/PriceAndSizes'
               quantity:
                 type: number
@@ -647,7 +647,7 @@ components:
                 type: number
                 description: Total price of the selected size
             required:
-              - priceAndSizeItem
+              - item
               - quantity
               - totalPrice
         totalPrice:
@@ -670,7 +670,7 @@ components:
           items:
             type: object
             properties:
-              priceAndSizeItemId:
+              itemId:
                 type: string
                 description: Price and size identifier
               quantity:
@@ -680,7 +680,7 @@ components:
                 type: number
                 description: Total price of the selected size
             required:
-              - priceAndSizeItemId
+              - itemId
               - quantity
               - totalPrice
         totalPrice:

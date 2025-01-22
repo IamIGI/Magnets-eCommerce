@@ -8,6 +8,7 @@ interface BasketState {
   totalPrice: number;
 }
 
+//TODO: Move to param db
 export const QUANTITY_ARR = [1, 5, 10, 20, 30, 40, 50, 75, 100, 150, 200, 250];
 
 const initialState: BasketState = {
@@ -33,6 +34,7 @@ const basketSlice = createSlice({
         priceAndSizeId: string;
       }>
     ) {
+      console.log('add');
       const { product, quantity, priceAndSizeId } = action.payload;
       const selectedPriceAndSize = product.pricesAndSizes.find(
         (ps) => ps.id === priceAndSizeId
@@ -50,27 +52,30 @@ const basketSlice = createSlice({
 
       if (existingProduct) {
         const existingSize = existingProduct.priceAndSizesArray.find(
-          (ps) => ps.priceAndSizeItem.id === priceAndSizeId
+          (ps) => ps.item.id === priceAndSizeId
         );
 
         if (existingSize) {
-          existingSize.quantity += quantity;
-          existingSize.totalPrice += selectedPriceAndSize.price * quantity;
+          existingSize.quantity = quantity;
+          existingSize.totalPrice = selectedPriceAndSize.price * quantity;
         } else {
           existingProduct.priceAndSizesArray.push({
-            priceAndSizeItem: selectedPriceAndSize,
+            item: selectedPriceAndSize,
             quantity,
             totalPrice: selectedPriceAndSize.price * quantity,
           });
         }
 
-        existingProduct.totalPrice += selectedPriceAndSize.price * quantity;
+        existingProduct.totalPrice =
+          basketUtils.calculateTotalBasketItemPrice(existingProduct);
+        state.totalQuantity = basketUtils.calculateTotalQuantity(state.basket);
+        state.totalPrice = basketUtils.calculateTotalBasketPrice(state.basket);
       } else {
         state.basket.push({
           product,
           priceAndSizesArray: [
             {
-              priceAndSizeItem: selectedPriceAndSize,
+              item: selectedPriceAndSize,
               quantity,
               totalPrice: selectedPriceAndSize.price * quantity,
             },
@@ -82,47 +87,16 @@ const basketSlice = createSlice({
       state.totalQuantity += quantity;
       state.totalPrice += selectedPriceAndSize.price * quantity;
     },
-    // Remove an item from the basket
-    remove(
-      state,
-      action: PayloadAction<{ productId: string; priceAndSizeId: string }>
-    ) {
-      const { productId, priceAndSizeId } = action.payload;
-      const productIndex = state.basket.findIndex(
-        (item) => item.product.id === productId
-      );
-
-      if (productIndex !== -1) {
-        const product = state.basket[productIndex];
-        const sizeIndex = product.priceAndSizesArray.findIndex(
-          (ps) => ps.priceAndSizeItem.id === priceAndSizeId
-        );
-
-        if (sizeIndex !== -1) {
-          const size = product.priceAndSizesArray[sizeIndex];
-          state.totalQuantity -= size.quantity;
-          state.totalPrice -= size.totalPrice;
-
-          product.priceAndSizesArray.splice(sizeIndex, 1);
-
-          if (product.priceAndSizesArray.length === 0) {
-            state.basket.splice(productIndex, 1);
-          } else {
-            product.totalPrice -= size.totalPrice;
-          }
-        }
-      }
-    },
     // Change the quantity of an item in the basket
     changeQuantity(
       state,
       action: PayloadAction<{
         productId: string;
         priceAndSizeId: string;
-        quantity: number;
+        operation: '+' | '-';
       }>
     ) {
-      const { productId, priceAndSizeId, quantity } = action.payload;
+      const { productId, priceAndSizeId, operation } = action.payload;
       const basketItem = state.basket.find(
         (item) => item.product.id === productId
       );
@@ -138,69 +112,57 @@ const basketSlice = createSlice({
         }
 
         const priceAndSizeItem = basketItem.priceAndSizesArray.find(
-          (ps) => ps.priceAndSizeItem.id === priceAndSizeId
+          (ps) => ps.item.id === priceAndSizeId
         );
 
         if (priceAndSizeItem) {
-          priceAndSizeItem.quantity = quantity;
-          priceAndSizeItem.totalPrice = quantity * priceForSize;
+          const newQuantity = basketUtils.getNewItemQuantity(
+            QUANTITY_ARR,
+            priceAndSizeItem.quantity,
+            operation
+          );
 
+          priceAndSizeItem.quantity = newQuantity;
+          priceAndSizeItem.totalPrice = newQuantity * priceForSize;
+          basketItem.totalPrice =
+            basketUtils.calculateTotalBasketItemPrice(basketItem);
           state.totalQuantity = basketUtils.calculateTotalQuantity(
             state.basket
           );
-          state.totalPrice = basketUtils.calculateTotalPrice(state.basket);
+          state.totalPrice = basketUtils.calculateTotalBasketPrice(
+            state.basket
+          );
         }
       }
     },
-    // Change the size of an item in the basket
-    changeSize(
+    removeSize(
       state,
       action: PayloadAction<{
-        id: string;
-        oldPriceAndSizeId: string;
-        newPriceAndSizeId: string;
+        productId: string;
+        priceAndSizeId: string;
       }>
     ) {
-      const { id, oldPriceAndSizeId, newPriceAndSizeId } = action.payload;
-      const basketItem = state.basket.find((item) => item.product.id === id);
-
-      if (basketItem) {
-        const oldSizeIndex = basketItem.priceAndSizesArray.findIndex(
-          (ps) => ps.priceAndSizeItem.id === oldPriceAndSizeId
+      console.log('removeSize');
+      const { productId, priceAndSizeId } = action.payload;
+      const product = state.basket.find(
+        (item) => item.product.id === productId
+      );
+      if (product) {
+        const newProductSizes = product.priceAndSizesArray.filter(
+          (ps) => ps.item.id !== priceAndSizeId
         );
-        const newPriceAndSize = basketItem.product.pricesAndSizes.find(
-          (ps) => ps.id === newPriceAndSizeId
-        );
-
-        if (oldSizeIndex && newPriceAndSize) {
-          const oldSize = basketItem.priceAndSizesArray[oldSizeIndex];
-          // Check if the new size already exists in the basket
-          const existingNewSize = basketItem.priceAndSizesArray.find(
-            (ps) => ps.priceAndSizeItem.id === newPriceAndSizeId
+        if (newProductSizes.length > 0) {
+          product.priceAndSizesArray = newProductSizes;
+        } else {
+          //remove whole product from basket
+          const updatedBasket = state.basket.filter(
+            (item) => item.product.id !== productId
           );
-
-          if (existingNewSize) {
-            //Update existing size withe new size quantity and recalculate price
-            existingNewSize.quantity += oldSize.quantity;
-            existingNewSize.totalPrice +=
-              oldSize.quantity * newPriceAndSize.price;
-
-            //remove old size
-            basketItem.priceAndSizesArray.splice(oldSizeIndex, 1);
-          } else {
-            oldSize.priceAndSizeItem = newPriceAndSize;
-            oldSize.totalPrice = oldSize.quantity * newPriceAndSize.price;
-          }
-
-          basketItem.totalPrice = basketItem.priceAndSizesArray.reduce(
-            (acc, size) => acc + size.totalPrice,
-            0
-          );
-
-          state.totalPrice = state.basket.reduce(
-            (acc, item) => acc + item.totalPrice,
-            0
-          );
+          return {
+            basket: updatedBasket,
+            totalPrice: basketUtils.calculateTotalBasketPrice(updatedBasket),
+            totalQuantity: basketUtils.calculateTotalQuantity(updatedBasket),
+          };
         }
       }
     },
