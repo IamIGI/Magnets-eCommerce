@@ -1,5 +1,6 @@
 import { BasketUpdateData } from '../api/magnetsServer/generated';
 import { DB_COLLECTIONS } from '../config/MongoDBConfig';
+import basketMapper from '../mappers/basket.mapper';
 import BasketModel from '../models/Basket.model';
 
 const SERVICE_NAME = 'Basket';
@@ -8,17 +9,19 @@ const getByUserId = async (id: string) => {
   try {
     const data = await BasketModel.findOne({ userId: id })
       .populate({
-        path: 'basket.productId',
+        path: 'products.productId',
         model: DB_COLLECTIONS.Products,
       })
       .populate({
-        path: 'basket.priceAndSizesArray.itemId',
+        path: 'products.priceAndSizesArray.itemId',
         model: DB_COLLECTIONS.PricesAndSizes,
+      })
+      .then((basket) => {
+        if (!basket) {
+          throw new Error(`${SERVICE_NAME} not found. UserId: ${id}`);
+        }
+        return basketMapper.mapBasketDocumentToBasket(basket);
       });
-
-    if (!data) {
-      throw new Error(`${SERVICE_NAME} not found. UserId: ${id}`);
-    }
 
     return data;
   } catch (err: any) {
@@ -47,12 +50,18 @@ const updateByUserId = async (id: string, data: BasketUpdateData) => {
       { new: true, runValidators: true }
     )
       .populate({
-        path: 'basket.productId',
+        path: 'products.productId',
         model: DB_COLLECTIONS.Products,
       })
       .populate({
-        path: 'basket.priceAndSizesArray.itemId',
+        path: 'products.priceAndSizesArray.itemId',
         model: DB_COLLECTIONS.PricesAndSizes,
+      })
+      .then((basket) => {
+        if (!basket) {
+          throw new Error(`${SERVICE_NAME} not found. UserId: ${id}`);
+        }
+        return basketMapper.mapBasketDocumentToBasket(basket);
       });
   } catch (err: any) {
     throw new Error(

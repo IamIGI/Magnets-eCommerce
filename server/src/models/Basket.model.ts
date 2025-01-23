@@ -6,7 +6,7 @@ export interface BasketDocument extends MongoDocument<BasketUpdateData> {}
 
 const basketSchema = new mongoose.Schema({
   userId: String, //TODO: in future, update for userId mongo object
-  basket: [
+  products: [
     {
       productId: {
         type: mongoose.Schema.Types.ObjectId,
