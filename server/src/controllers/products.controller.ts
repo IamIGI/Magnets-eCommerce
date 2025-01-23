@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import productsService from '../services/products.service';
 import { ProductUpdateData } from '../api/magnetsServer/generated';
 import validateRequestUtil from '../utils/validateRequest.util';
@@ -6,6 +6,7 @@ import validateRequestUtil from '../utils/validateRequest.util';
 export interface ProductPayload
   extends Omit<ProductUpdateData, 'createDate' | 'editDate'> {}
 const REQUIRED_KEYS: Array<keyof ProductPayload> = [
+  'name',
   'categoryId',
   'description',
   'imgNames',
@@ -14,29 +15,31 @@ const REQUIRED_KEYS: Array<keyof ProductPayload> = [
   'pricesAndSizesIds',
 ];
 
-const getAll = async (req: Request, res: Response) => {
+const getAll = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const products = await productsService.getAll();
     res.status(200).json(products);
   } catch (err: any) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 };
 
-const getById = async (req: Request, res: Response) => {
+const getById = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
-    const product = await productsService.getById(id);
 
     validateRequestUtil.validateId(id);
 
+    const product = await productsService.getById(id);
+
     res.status(200).json(product);
   } catch (err: any) {
-    res.status(500).json({ error: err.message });
+    console.log(err);
+    next(err);
   }
 };
 
-const add = async (req: Request, res: Response) => {
+const add = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const payload = req.body as ProductPayload;
 
@@ -53,11 +56,11 @@ const add = async (req: Request, res: Response) => {
 
     res.status(201).json(newProduct);
   } catch (err: any) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 };
 
-const editById = async (req: Request, res: Response) => {
+const editById = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
     const payload = req.body as ProductPayload;
@@ -78,11 +81,11 @@ const editById = async (req: Request, res: Response) => {
     }
     res.status(200).json(updatedProduct);
   } catch (err: any) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 };
 
-const removeById = async (req: Request, res: Response) => {
+const removeById = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
 
@@ -91,7 +94,7 @@ const removeById = async (req: Request, res: Response) => {
     await productsService.removeById(id);
     res.status(200).send({ id });
   } catch (err: any) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 };
 

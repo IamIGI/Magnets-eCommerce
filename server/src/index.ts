@@ -8,6 +8,7 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import connectDB from './config/MongoDBConfig';
 import corsOptions from './config/corsOptions';
+import { errorHandler } from './handlers/error.handler';
 
 const PORT = process.env.PORT || 4000;
 
@@ -32,6 +33,7 @@ app.use('/prices-sizes', require('./routes/api/pricesAndSizes.route'));
 app.use('/product-categories', require('./routes/api/productCategories.route'));
 app.use('/baskets', require('./routes/api/basket.route'));
 
+app.use(errorHandler);
 // handle UNKNOWN URL REQUESTS
 app.all('*', (req: Request, res: Response) => {
   res.status(404);

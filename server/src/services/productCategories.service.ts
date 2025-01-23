@@ -1,24 +1,34 @@
 import { ProductCategoryPayload } from '../controllers/productCategories.controller';
+import { createCustomError } from '../handlers/error.handler';
 import ProductCategoryModel from '../models/ProductCategories.model';
+import { HttpStatusCode } from '../types/error.type';
+
+const SERVICE_NAME = 'Product Categories';
 
 const getAll = async () => {
   try {
     const categories = await ProductCategoryModel.find();
     return categories;
   } catch (err: any) {
-    console.log(err);
-    throw new Error(`Failed to fetch product categories: ${err.message}`);
+    throw createCustomError(
+      HttpStatusCode.InternalServerError,
+      SERVICE_NAME,
+      JSON.stringify(err)
+    );
   }
 };
 
 const add = async (category: ProductCategoryPayload) => {
   try {
     const productCategory = new ProductCategoryModel(category);
-    console.log(productCategory);
+
     return await productCategory.save();
   } catch (err: any) {
-    console.log(err);
-    throw new Error(`Failed to fetch product categories: ${err.message}`);
+    throw createCustomError(
+      HttpStatusCode.InternalServerError,
+      SERVICE_NAME,
+      JSON.stringify(err)
+    );
   }
 };
 
@@ -26,11 +36,18 @@ const editById = async (id: string, data: ProductCategoryPayload) => {
   try {
     return await ProductCategoryModel.findByIdAndUpdate(id, data, {
       new: true,
+    }).then((data) => {
+      if (!data) {
+        throw createCustomError(
+          HttpStatusCode.NotFound,
+          SERVICE_NAME,
+          `Not found, id: ${id}`
+        );
+      }
+      return data;
     });
   } catch (err: any) {
-    throw new Error(
-      `Failed to update product category  with ID ${id}:\n ${err.message}`
-    );
+    throw err;
   }
 };
 
@@ -41,17 +58,18 @@ const editById = async (id: string, data: ProductCategoryPayload) => {
  */
 const removeById = async (id: string): Promise<void> => {
   try {
-    const document = await ProductCategoryModel.findById(id);
-    console.log(document);
-    if (!document) {
-      throw new Error(`No document with given id`);
-    }
-    await ProductCategoryModel.findByIdAndDelete(id);
+    await ProductCategoryModel.findByIdAndDelete(id).then((data) => {
+      if (!data) {
+        throw createCustomError(
+          HttpStatusCode.NotFound,
+          SERVICE_NAME,
+          `Not found, id: ${id}`
+        );
+      }
+      return data;
+    });
   } catch (err: any) {
-    if (err)
-      throw new Error(
-        `Failed to delete product category with ID ${id}: ${err.message}`
-      );
+    throw err;
   }
 };
 
