@@ -1,6 +1,7 @@
-import { PriceAndSizes } from '../api/magnetsServer/generated';
 import { PricesAndSizesPayload } from '../controllers/pricesAndSizes.controller';
+import { createCustomError } from '../handlers/error.handler';
 import PriceAndSizeModel from '../models/PricesAndSizes.model';
+import { HttpStatusCode } from '../types/error.type';
 
 const SERVICE_NAME = 'PricesAndSizes';
 
@@ -9,20 +10,25 @@ const getAll = async () => {
     const dataArray = await PriceAndSizeModel.find();
     return dataArray;
   } catch (err: any) {
-    console.log(err);
-    throw new Error(`Failed to fetch ${SERVICE_NAME}: ${err.message}`);
+    throw createCustomError(
+      HttpStatusCode.InternalServerError,
+      SERVICE_NAME,
+      JSON.stringify(err)
+    );
   }
 };
 
 const add = async (payload: PricesAndSizesPayload) => {
   try {
-    console.log(payload);
     const PriceAndSizes = new PriceAndSizeModel(payload);
-    console.log(PriceAndSizes);
+
     return await PriceAndSizes.save();
   } catch (err: any) {
-    console.log(err);
-    throw new Error(`Failed to fetch ${SERVICE_NAME}: ${err.message}`);
+    throw createCustomError(
+      HttpStatusCode.InternalServerError,
+      SERVICE_NAME,
+      JSON.stringify(err)
+    );
   }
 };
 
@@ -30,32 +36,35 @@ const editById = async (id: string, payload: PricesAndSizesPayload) => {
   try {
     return await PriceAndSizeModel.findByIdAndUpdate(id, payload, {
       new: true,
+    }).then((data) => {
+      if (!data) {
+        throw createCustomError(
+          HttpStatusCode.NotFound,
+          SERVICE_NAME,
+          `Not found, id: ${id}`
+        );
+      }
+      return data;
     });
   } catch (err: any) {
-    throw new Error(
-      `Failed to update ${SERVICE_NAME}  with ID ${id}:\n ${err.message}`
-    );
+    throw err;
   }
 };
 
-/**
- * Delete a product by its ID.
- * @param {string} id - The ID of the product to delete.
- * @returns {Promise<void>} A promise that resolves when the product is deleted.
- */
-const removeById = async (id: string): Promise<void> => {
+const removeById = async (id: string) => {
   try {
-    const document = await PriceAndSizeModel.findById(id);
-
-    if (!document) {
-      throw new Error(`No document in ${SERVICE_NAME} with given id`);
-    }
-    await PriceAndSizeModel.findByIdAndDelete(id);
+    return await PriceAndSizeModel.findByIdAndDelete(id).then((data) => {
+      if (!data) {
+        throw createCustomError(
+          HttpStatusCode.NotFound,
+          SERVICE_NAME,
+          `Not found, id: ${id}`
+        );
+      }
+      return data;
+    });
   } catch (err: any) {
-    if (err)
-      throw new Error(
-        `Failed to delete ${SERVICE_NAME} with ID ${id}: ${err.message}`
-      );
+    throw err;
   }
 };
 

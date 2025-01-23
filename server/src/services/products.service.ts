@@ -1,10 +1,12 @@
 import { Product, ProductUpdateData } from '../api/magnetsServer/generated';
 import { DB_COLLECTIONS } from '../config/MongoDBConfig';
 import { ProductPayload } from '../controllers/products.controller';
+import { createCustomError } from '../handlers/error.handler';
 import productMapper from '../mappers/product.mapper';
 import ProductModel, { ProductDocument } from '../models/Products.model';
+import { HttpStatusCode } from '../types/error.type';
 
-const SERVICE_NAME = 'Product';
+const SERVICE_NAME = 'Products';
 
 const getAll = async (): Promise<Product[]> => {
   try {
@@ -25,8 +27,10 @@ const getAll = async (): Promise<Product[]> => {
 
     return productsData;
   } catch (err: any) {
-    throw new Error(
-      `Failed to fetch ${SERVICE_NAME}s.\n Error: ${err.message}`
+    throw createCustomError(
+      HttpStatusCode.InternalServerError,
+      SERVICE_NAME,
+      JSON.stringify(err)
     );
   }
 };
@@ -44,14 +48,16 @@ const getById = async (id: string) => {
       });
 
     if (!product) {
-      throw new Error(`${SERVICE_NAME} not found. Id: ${id}`);
+      throw createCustomError(
+        HttpStatusCode.NotFound,
+        SERVICE_NAME,
+        `Not found. UserId: ${id}`
+      );
     }
 
     return productMapper.mapProductDocumentToProduct(product);
   } catch (err: any) {
-    throw new Error(
-      `Failed to fetch product with ID ${id}:\n Error: ${err.message}`
-    );
+    throw err;
   }
 };
 
@@ -64,9 +70,14 @@ const add = async (productData: ProductPayload): Promise<ProductDocument> => {
     };
 
     const product = new ProductModel(newProduct);
+
     return await product.save();
   } catch (err: any) {
-    throw new Error(`Failed to create product.\n Error: ${err.message}`);
+    throw createCustomError(
+      HttpStatusCode.InternalServerError,
+      SERVICE_NAME,
+      JSON.stringify(err)
+    );
   }
 };
 
@@ -74,7 +85,11 @@ const editById = async (id: string, productData: ProductPayload) => {
   try {
     const product = await ProductModel.findById(id);
     if (!product) {
-      throw new Error(`Product not found. Id: ${id}`);
+      throw createCustomError(
+        HttpStatusCode.NotFound,
+        SERVICE_NAME,
+        `Not found. UserId: ${id}`
+      );
     }
 
     const updateData: ProductUpdateData = {
@@ -88,18 +103,24 @@ const editById = async (id: string, productData: ProductPayload) => {
       runValidators: true,
     });
   } catch (err: any) {
-    throw new Error(`Failed to update product with ID ${id}: ${err.message}`);
+    throw err;
   }
 };
 
 const removeById = async (id: string) => {
   try {
-    const document = await ProductModel.findByIdAndDelete(id);
-    if (!document) {
-      throw new Error(`No document in ${SERVICE_NAME} with given id`);
-    }
+    return await ProductModel.findByIdAndDelete(id).then((data) => {
+      if (!data) {
+        throw createCustomError(
+          HttpStatusCode.NotFound,
+          SERVICE_NAME,
+          `Not found, id: ${id}`
+        );
+      }
+      return data;
+    });
   } catch (err: any) {
-    throw new Error(`Failed to delete product with ID ${id}: ${err.message}`);
+    throw err;
   }
 };
 

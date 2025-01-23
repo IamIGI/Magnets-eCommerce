@@ -379,8 +379,12 @@ paths:
           schema:
             type: string
       responses:
-        '204':
-          description: Basket successfully deleted
+        '200':
+          description: A basket object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Basket'
         '404':
           description: Basket not found
         '500':

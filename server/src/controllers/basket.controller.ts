@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import {
   BasketItemUpdateData,
   BasketItemUpdateDataPriceAndSizesArrayInner,
@@ -23,21 +23,25 @@ const REQUIRED_KEYS_PRICE_AND_SIZES_ARRAY: Array<
   keyof BasketItemUpdateDataPriceAndSizesArrayInner
 > = ['itemId', 'quantity', 'totalPrice'];
 
-const getByUserId = async (req: Request, res: Response) => {
+const getByUserId = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
+
+    validateRequestUtil.validateId(id, 'userId');
+
     const basket = await basketsService.getByUserId(id);
+
     res.status(200).json(basket);
   } catch (err: any) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 };
 
-const add = async (req: Request, res: Response) => {
+const create = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const payload = req.body as BasketUpdateData;
 
-    //Valid payloads
+    validateRequestUtil.validateId(payload.userId!, 'UserId');
     validateRequestUtil.isValidPayload<BasketUpdateData>(
       payload,
       REQUIRED_KEYS
@@ -58,25 +62,28 @@ const add = async (req: Request, res: Response) => {
         );
       }
     });
-    validateRequestUtil.validateId(payload.userId!, 'UserId');
 
-    const newBasket = await basketsService.add(payload);
+    const newBasket = await basketsService.create(payload);
+
     res.status(201).json(newBasket);
   } catch (err: any) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 };
 
-const updateByUserId = async (req: Request, res: Response) => {
+const updateByUserId = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { id } = req.params; //userId
-    const payload = req.body as BasketUpdateData;
+    const payload = req.body as Omit<BasketUpdateData, 'userId'>;
 
-    validateRequestUtil.validateId(id);
-    //Valid payloads
+    validateRequestUtil.validateId(id, 'UserId');
     validateRequestUtil.isValidPayload<BasketUpdateData>(
       payload,
-      REQUIRED_KEYS
+      REQUIRED_KEYS.filter((key) => key !== 'userId')
     );
     payload.products?.forEach((product) => {
       validateRequestUtil.isValidPayload(
@@ -94,34 +101,40 @@ const updateByUserId = async (req: Request, res: Response) => {
         );
       }
     });
-    validateRequestUtil.validateId(payload.userId!, 'UserId');
+    validateRequestUtil.validateId(id, 'UserId');
 
-    const updatedBasket = await basketsService.updateByUserId(id, payload);
-    if (!updatedBasket) {
-      res.status(404).json({ message: 'Basket not found' });
-    }
+    const updatedBasket = await basketsService.updateByUserId(id, {
+      ...payload,
+      userId: id,
+    });
+
     res.status(200).json(updatedBasket);
   } catch (err: any) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 };
 
-const removeByUserId = async (req: Request, res: Response) => {
+const removeByUserId = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const { id } = req.params;
 
-    validateRequestUtil.validateId(id);
+    validateRequestUtil.validateId(id, 'UserId');
 
     await basketsService.removeByUserId(id);
+
     res.status(200).send({ id });
   } catch (err: any) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 };
 
 export default {
   getByUserId,
-  add,
+  create,
   updateByUserId,
   removeByUserId,
 };

@@ -1,9 +1,11 @@
 import { BasketUpdateData } from '../api/magnetsServer/generated';
 import { DB_COLLECTIONS } from '../config/MongoDBConfig';
+import { createCustomError } from '../handlers/error.handler';
 import basketMapper from '../mappers/basket.mapper';
 import BasketModel from '../models/Basket.model';
+import { HttpStatusCode } from '../types/error.type';
 
-const SERVICE_NAME = 'Basket';
+const SERVICE_NAME = 'Baskets';
 
 const getByUserId = async (id: string) => {
   try {
@@ -18,27 +20,38 @@ const getByUserId = async (id: string) => {
       })
       .then((basket) => {
         if (!basket) {
-          throw new Error(`${SERVICE_NAME} not found. UserId: ${id}`);
+          throw createCustomError(
+            HttpStatusCode.NotFound,
+            SERVICE_NAME,
+            `Not found. UserId: ${id}`
+          );
         }
         return basketMapper.mapBasketDocumentToBasket(basket);
       });
 
     return data;
   } catch (err: any) {
-    console.log(err);
-    throw new Error(`Failed to fetch product categories: ${err.message}`);
+    throw err;
   }
 };
 
-const add = async (data: BasketUpdateData) => {
+const create = async (data: BasketUpdateData) => {
   try {
+    const isDataExists = await BasketModel.findOne({ userId: data.userId });
+    if (isDataExists) {
+      throw createCustomError(
+        HttpStatusCode.NotFound,
+        SERVICE_NAME,
+        `User already have basket, userId: ${data.userId}`
+      );
+    }
+
     const newData = new BasketModel(data);
     console.log(newData);
     await newData.save();
     return getByUserId(data.userId!);
   } catch (err: any) {
-    console.log(err);
-    throw new Error(`Failed to fetch product categories: ${err.message}`);
+    throw err;
   }
 };
 
@@ -59,14 +72,16 @@ const updateByUserId = async (id: string, data: BasketUpdateData) => {
       })
       .then((basket) => {
         if (!basket) {
-          throw new Error(`${SERVICE_NAME} not found. UserId: ${id}`);
+          throw createCustomError(
+            HttpStatusCode.NotFound,
+            SERVICE_NAME,
+            `not found. UserId: ${id}`
+          );
         }
         return basketMapper.mapBasketDocumentToBasket(basket);
       });
   } catch (err: any) {
-    throw new Error(
-      `Failed to update product category  with ID ${id}:\n ${err.message}`
-    );
+    throw err;
   }
 };
 
@@ -74,19 +89,20 @@ const removeByUserId = async (id: string): Promise<void> => {
   try {
     const result = await BasketModel.deleteOne({ userId: id });
     if (result.deletedCount === 0) {
-      throw new Error('Basket not found');
+      throw createCustomError(
+        HttpStatusCode.NotFound,
+        SERVICE_NAME,
+        `Not found, UserId: ${id}`
+      );
     }
   } catch (err: any) {
-    if (err)
-      throw new Error(
-        `Failed to delete product category with ID ${id}: ${err.message}`
-      );
+    throw err;
   }
 };
 
 export default {
   getByUserId,
-  add,
+  create,
   updateByUserId,
   removeByUserId,
 };

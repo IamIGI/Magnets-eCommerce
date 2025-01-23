@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import productCategoriesService from '../services/productCategories.service';
 import { ProductCategory } from '../api/magnetsServer/generated';
 import validateRequestUtil from '../utils/validateRequest.util';
@@ -9,16 +9,16 @@ const REQUIRED_KEYS: Array<keyof ProductCategoryPayload> = [
   'description',
 ];
 
-const getAll = async (req: Request, res: Response) => {
+const getAll = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const productCategories = await productCategoriesService.getAll();
     res.status(200).json(productCategories);
   } catch (err: any) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 };
 
-const add = async (req: Request, res: Response) => {
+const add = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const payload = req.body as ProductCategoryPayload;
 
@@ -30,11 +30,11 @@ const add = async (req: Request, res: Response) => {
     const newCategory = await productCategoriesService.add(payload);
     res.status(201).json(newCategory);
   } catch (err: any) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 };
 
-const editById = async (req: Request, res: Response) => {
+const editById = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
     const payload = req.body as ProductCategoryPayload;
@@ -54,16 +54,11 @@ const editById = async (req: Request, res: Response) => {
     }
     res.status(200).json(updatedCategory);
   } catch (err: any) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 };
 
-/**
- * Controller to delete a product by ID.
- * @param {Request} req - Express request object.
- * @param {Response} res - Express response object.
- */
-const removeById = async (req: Request, res: Response) => {
+const removeById = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
 
@@ -72,7 +67,7 @@ const removeById = async (req: Request, res: Response) => {
     await productCategoriesService.removeById(id);
     res.status(200).send({ id });
   } catch (err: any) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 };
 

@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { PriceAndSizes } from '../api/magnetsServer/generated';
 import validateRequestUtil from '../utils/validateRequest.util';
 import pricesAndSizesService from '../services/pricesAndSizes.service';
@@ -6,16 +6,16 @@ import pricesAndSizesService from '../services/pricesAndSizes.service';
 export type PricesAndSizesPayload = Omit<PriceAndSizes, '_id'>;
 const REQUIRED_KEYS: Array<keyof PricesAndSizesPayload> = ['price', 'size'];
 
-const getAll = async (req: Request, res: Response) => {
+const getAll = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = await pricesAndSizesService.getAll();
     res.status(200).json(data);
   } catch (err: any) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 };
 
-const add = async (req: Request, res: Response) => {
+const add = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const payload = req.body as Omit<PriceAndSizes, 'id'>;
 
@@ -24,11 +24,11 @@ const add = async (req: Request, res: Response) => {
     const newData = await pricesAndSizesService.add(payload);
     res.status(201).json(newData);
   } catch (err: any) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 };
 
-const editById = async (req: Request, res: Response) => {
+const editById = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
     const payload = req.body as Omit<PriceAndSizes, 'id'>;
@@ -42,16 +42,11 @@ const editById = async (req: Request, res: Response) => {
     }
     res.status(200).json(updatedData);
   } catch (err: any) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 };
 
-/**
- * Controller to delete a product by ID.
- * @param {Request} req - Express request object.
- * @param {Response} res - Express response object.
- */
-const removeById = async (req: Request, res: Response) => {
+const removeById = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
 
@@ -60,7 +55,7 @@ const removeById = async (req: Request, res: Response) => {
     await pricesAndSizesService.removeById(id);
     res.status(200).send({ id });
   } catch (err: any) {
-    res.status(500).json({ error: err.message });
+    next(err);
   }
 };
 
