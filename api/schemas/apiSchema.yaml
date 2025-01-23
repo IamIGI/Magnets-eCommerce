@@ -701,7 +701,7 @@ components:
         userId:
           type: string
           description: User identifier
-        basket:
+        products:
           type: array
           description: User products
           items:
@@ -715,7 +715,7 @@ components:
       required:
         - _id
         - userId
-        - basket
+        - products
         - totalQuantity
         - totalPrice
     BasketUpdateData:
@@ -725,7 +725,7 @@ components:
         userId:
           type: string
           description: User identifier
-        basket:
+        products:
           type: array
           description: User products
           items:
@@ -738,6 +738,6 @@ components:
           description: Total price of the purchase
       required:
         - userId
-        - basket
+        - products
         - totalQuantity
         - totalPrice

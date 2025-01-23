@@ -8,7 +8,7 @@ import validateRequestUtil from '../utils/validateRequest.util';
 import basketsService from '../services/baskets.service';
 
 const REQUIRED_KEYS: Array<keyof BasketUpdateData> = [
-  'basket',
+  'products',
   'totalPrice',
   'totalQuantity',
   'userId',
@@ -42,14 +42,14 @@ const add = async (req: Request, res: Response) => {
       payload,
       REQUIRED_KEYS
     );
-    payload.basket?.forEach((basketItem) => {
+    payload.products?.forEach((product) => {
       validateRequestUtil.isValidPayload(
-        basketItem,
+        product,
         REQUIRED_KEYS_BASKET_ITEM,
-        'Basket item'
+        'Product'
       );
-      if (basketItem.priceAndSizesArray) {
-        basketItem.priceAndSizesArray?.forEach((ps) =>
+      if (product.priceAndSizesArray) {
+        product.priceAndSizesArray?.forEach((ps) =>
           validateRequestUtil.isValidPayload(
             ps,
             REQUIRED_KEYS_PRICE_AND_SIZES_ARRAY,
@@ -78,14 +78,14 @@ const updateByUserId = async (req: Request, res: Response) => {
       payload,
       REQUIRED_KEYS
     );
-    payload.basket?.forEach((basketItem) => {
+    payload.products?.forEach((product) => {
       validateRequestUtil.isValidPayload(
-        basketItem,
+        product,
         REQUIRED_KEYS_BASKET_ITEM,
-        'Basket item'
+        'Product'
       );
-      if (basketItem.priceAndSizesArray) {
-        basketItem.priceAndSizesArray?.forEach((ps) =>
+      if (product.priceAndSizesArray) {
+        product.priceAndSizesArray?.forEach((ps) =>
           validateRequestUtil.isValidPayload(
             ps,
             REQUIRED_KEYS_PRICE_AND_SIZES_ARRAY,

@@ -3,6 +3,7 @@ import {
   Product,
   ProductCategory,
 } from '../api/magnetsServer/generated';
+
 import { ProductDocument } from '../models/Products.model';
 
 function mapProductDocumentToProduct(product: ProductDocument): Product {
