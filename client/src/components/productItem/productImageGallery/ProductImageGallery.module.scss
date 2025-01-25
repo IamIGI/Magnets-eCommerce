@@ -4,7 +4,7 @@
   width: 100%;
   gap: 1rem;
 
-  @media (max-width: 950px) {
+  @media (max-width: 1050px) {
     flex-direction: column-reverse;
   }
 }
@@ -12,33 +12,27 @@
 .thumbnailColumn {
   display: flex;
   flex-direction: column;
-  width: 20%;
-  // overflow-y: auto;
   gap: 8px;
 
-  @media (max-width: 950px) {
+  @media (max-width: 1050px) {
     flex-direction: row;
     width: 100%;
-    overflow-x: auto;
+    overflow-x: hidden;
+    justify-content: center;
   }
 }
 
 .thumbnail {
   width: 100%;
-  max-width: 100px;
-  max-height: 85px;
+  max-width: 85px;
+  max-height: 65px;
   cursor: pointer;
   margin-bottom: 10px;
   transition: transform 0.2s;
 
-  @media (max-width: 950px) {
-    max-width: 90px;
-    max-height: 75px;
-  }
-
   @media (max-width: 550px) {
-    max-width: 80px;
-    max-height: 65px;
+    max-width: 70px;
+    max-height: 70px;
   }
 }
 
@@ -47,12 +41,12 @@
 }
 
 .mainImageColumn {
-  width: 80%;
+  flex: 1;
   display: flex;
   justify-content: flex-start;
   align-items: flex-start;
 
-  @media (max-width: 950px) {
+  @media (max-width: 1050px) {
     width: 100%;
     justify-content: center;
     align-items: center;
@@ -61,8 +55,9 @@
 
 .mainImage {
   width: 100%;
-  max-width: 600px;
-  max-height: 675px;
+
+  max-width: 850px;
+  max-height: 850px;
   height: auto;
 }
 

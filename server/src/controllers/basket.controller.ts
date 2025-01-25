@@ -11,7 +11,6 @@ const REQUIRED_KEYS: Array<keyof BasketUpdateData> = [
   'products',
   'totalPrice',
   'totalQuantity',
-  'userId',
 ];
 const REQUIRED_KEYS_BASKET_ITEM: Array<keyof BasketItemUpdateData> = [
   'priceAndSizesArray',
@@ -39,9 +38,28 @@ const getByUserId = async (req: Request, res: Response, next: NextFunction) => {
 
 const create = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const payload = req.body as BasketUpdateData;
+    const payload = req.body as { userId: string };
 
     validateRequestUtil.validateId(payload.userId!, 'UserId');
+
+    const newBasket = await basketsService.create(payload.userId);
+
+    res.status(201).json(newBasket);
+  } catch (err: any) {
+    next(err);
+  }
+};
+
+const updateByUserId = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params; //userId
+    const payload = req.body as BasketUpdateData;
+
+    validateRequestUtil.validateId(id, 'UserId');
     validateRequestUtil.isValidPayload<BasketUpdateData>(
       payload,
       REQUIRED_KEYS
@@ -63,50 +81,7 @@ const create = async (req: Request, res: Response, next: NextFunction) => {
       }
     });
 
-    const newBasket = await basketsService.create(payload);
-
-    res.status(201).json(newBasket);
-  } catch (err: any) {
-    next(err);
-  }
-};
-
-const updateByUserId = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const { id } = req.params; //userId
-    const payload = req.body as Omit<BasketUpdateData, 'userId'>;
-
-    validateRequestUtil.validateId(id, 'UserId');
-    validateRequestUtil.isValidPayload<BasketUpdateData>(
-      payload,
-      REQUIRED_KEYS.filter((key) => key !== 'userId')
-    );
-    payload.products?.forEach((product) => {
-      validateRequestUtil.isValidPayload(
-        product,
-        REQUIRED_KEYS_BASKET_ITEM,
-        'Product'
-      );
-      if (product.priceAndSizesArray) {
-        product.priceAndSizesArray?.forEach((ps) =>
-          validateRequestUtil.isValidPayload(
-            ps,
-            REQUIRED_KEYS_PRICE_AND_SIZES_ARRAY,
-            'Price and Size item'
-          )
-        );
-      }
-    });
-    validateRequestUtil.validateId(id, 'UserId');
-
-    const updatedBasket = await basketsService.updateByUserId(id, {
-      ...payload,
-      userId: id,
-    });
+    const updatedBasket = await basketsService.updateByUserId(id, payload);
 
     res.status(200).json(updatedBasket);
   } catch (err: any) {

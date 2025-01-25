@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import {
+  BasketApi,
   Configuration,
   PricesAndSizesApi,
   ProductCategoriesApi,
@@ -12,6 +13,7 @@ class MagnetsServerApi {
   public productService: ProductsApi;
   public productCategoriesService: ProductCategoriesApi;
   public priceAndSizeService: PricesAndSizesApi;
+  public basketService: BasketApi;
 
   constructor() {
     const SERVER_URL =
@@ -33,6 +35,7 @@ class MagnetsServerApi {
     this.priceAndSizeService = errorHandler(
       new PricesAndSizesApi(configuration)
     );
+    this.basketService = errorHandler(new BasketApi(configuration));
 
     function errorHandler(service: any) {
       return new Proxy(service, {
@@ -45,14 +48,19 @@ class MagnetsServerApi {
               } catch (error) {
                 if (error instanceof ResponseError) {
                   const ResponseError = await error.response.json();
+                  console.error(ResponseError);
 
-                  //Error to be handled in special way:
+                  // Handle specific error codes here if needed
                   switch (ResponseError.errorCode) {
                     default:
-                      console.log(ResponseError);
+                      console.error(
+                        'Unhandled error code:',
+                        ResponseError.errorCode
+                      );
                       break;
                   }
                 }
+                throw error; // Ensure the error is re-thrown
               }
             };
           }

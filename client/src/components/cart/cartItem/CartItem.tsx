@@ -32,7 +32,7 @@ const CartItem: React.FC<CartItemProps> = ({
         </div>
 
         {basketItem.priceAndSizesArray.map((psItem) => (
-          <div className={c.actionWrapper}>
+          <div className={c.actionWrapper} key={psItem.item.id}>
             <h5> {psItem.item.size}</h5>
             <StyledQuantityButton
               value={psItem.quantity.toString()}

@@ -5,7 +5,10 @@ import CartItem from './cartItem/CartItem';
 import StyledIcon from '../ui/styledIcon/StyledIcon';
 import Price from '../ui/price/Price';
 import { useAppDispatch, useAppSelector } from '../../state/store';
-import { basketSliceActions } from '../../state/features/basket/basket.slice';
+import {
+  changeBasketItemQuantity,
+  removeBasketItemSize,
+} from '../../state/features/basket/basket.slice';
 
 interface CartProps {
   isVisible: boolean;
@@ -13,7 +16,7 @@ interface CartProps {
 }
 const Cart: React.FC<CartProps> = ({ isVisible, onCloseCart }) => {
   const cartRef = useRef<HTMLDivElement>(null);
-  const basketData = useAppSelector((state) => state.basket);
+  const basketData = useAppSelector((state) => state.basket.data);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -28,10 +31,10 @@ const Cart: React.FC<CartProps> = ({ isVisible, onCloseCart }) => {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  });
+  }, [basketData]);
 
   function handleRemoveSize(productId: string, priceAndSizeId: string) {
-    dispatch(basketSliceActions.removeSize({ productId, priceAndSizeId }));
+    dispatch(removeBasketItemSize({ productId, priceAndSizeId }));
   }
 
   function handleQuantityChange(
@@ -39,13 +42,8 @@ const Cart: React.FC<CartProps> = ({ isVisible, onCloseCart }) => {
     productId: string,
     priceAndSizeId: string
   ) {
-    console.log(basketData);
     dispatch(
-      basketSliceActions.changeQuantity({
-        productId,
-        priceAndSizeId,
-        operation,
-      })
+      changeBasketItemQuantity({ productId, priceAndSizeId, operation })
     );
   }
 
@@ -71,10 +69,10 @@ const Cart: React.FC<CartProps> = ({ isVisible, onCloseCart }) => {
             />
           </div>
           <div className={c.productsList}>
-            {basketData.basket.map((basketItem) => (
+            {basketData.products.map((product) => (
               <CartItem
-                key={basketItem.product.id}
-                basketItem={basketItem}
+                key={product.product.id}
+                basketItem={product}
                 onSizeRemove={handleRemoveSize}
                 onQuantityChange={handleQuantityChange}
               />

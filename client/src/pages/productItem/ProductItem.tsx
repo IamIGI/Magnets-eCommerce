@@ -8,7 +8,7 @@ import { useEffect } from 'react';
 import { NavigationLinks } from '../../components/views/Root';
 import Loading from '../../components/ui/loading/Loading';
 import { FetchStatus } from '../../interfaces/global';
-import { basketSliceActions } from '../../state/features/basket/basket.slice';
+import { addToBasket } from '../../state/features/basket/basket.slice';
 
 const ProductItem = () => {
   const { id } = useParams<{ id: string }>();
@@ -34,7 +34,7 @@ const ProductItem = () => {
   function addProduct(priceAndSizeId: string, quantity: number) {
     if (!product) throw new Error('No product found.');
 
-    dispatch(basketSliceActions.add({ product, quantity, priceAndSizeId }));
+    dispatch(addToBasket({ product, quantity, priceAndSizeId }));
   }
 
   if (!product) {
