@@ -351,7 +351,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BasketUpdateData'
+              type: object
+              properties:
+                userId:
+                  type: string
+                  description: The unique identifier of the user for whom the basket is being created.
+              required:
+                - userId
       responses:
         '201':
           description: Basket successfully created
@@ -726,9 +732,6 @@ components:
       type: object
       description: User basket data, with selected products
       properties:
-        userId:
-          type: string
-          description: User identifier
         products:
           type: array
           description: User products
@@ -741,7 +744,6 @@ components:
           type: number
           description: Total price of the purchase
       required:
-        - userId
         - products
         - totalQuantity
         - totalPrice

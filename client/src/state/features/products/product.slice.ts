@@ -14,10 +14,10 @@ interface ProductsState {
 
 const initialState: ProductsState = {
   products: [],
-  status: FetchStatus.Idle,
   counter: 0,
   selectedProduct: null,
   productsLastFetched: null,
+  status: FetchStatus.Idle,
 };
 
 export const fetchProducts = createAsyncThunk(

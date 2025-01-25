@@ -8,18 +8,24 @@ import { HttpStatusCode } from '../types/error.type';
 
 const SERVICE_NAME = 'Products';
 
+async function applyProductPopulation<T>(query: any): Promise<T> {
+  return query
+    .populate({
+      path: 'categoryId',
+      model: DB_COLLECTIONS.ProductCategories,
+    })
+    .populate({
+      path: 'pricesAndSizesIds',
+      model: DB_COLLECTIONS.PricesAndSizes,
+    });
+}
+
 const getAll = async (): Promise<Product[]> => {
   try {
     // Use populate to automatically fetch related data
-    const products = await ProductModel.find()
-      .populate({
-        path: 'categoryId',
-        model: DB_COLLECTIONS.ProductCategories,
-      })
-      .populate({
-        path: 'pricesAndSizesIds',
-        model: DB_COLLECTIONS.PricesAndSizes,
-      });
+    const products = await applyProductPopulation<ProductDocument[]>(
+      ProductModel.find()
+    );
 
     const productsData = products.map((product) =>
       productMapper.mapProductDocumentToProduct(product)
@@ -37,15 +43,9 @@ const getAll = async (): Promise<Product[]> => {
 
 const getById = async (id: string) => {
   try {
-    const product = await ProductModel.findById(id)
-      .populate({
-        path: 'categoryId',
-        model: DB_COLLECTIONS.ProductCategories,
-      })
-      .populate({
-        path: 'pricesAndSizesIds',
-        model: DB_COLLECTIONS.PricesAndSizes,
-      });
+    const product = await applyProductPopulation<ProductDocument>(
+      ProductModel.findById(id)
+    );
 
     if (!product) {
       throw createCustomError(
@@ -84,6 +84,7 @@ const add = async (productData: ProductPayload): Promise<ProductDocument> => {
 const editById = async (id: string, productData: ProductPayload) => {
   try {
     const product = await ProductModel.findById(id);
+
     if (!product) {
       throw createCustomError(
         HttpStatusCode.NotFound,

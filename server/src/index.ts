@@ -31,7 +31,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 app.use('/products', require('./routes/api/products.route'));
 app.use('/prices-sizes', require('./routes/api/pricesAndSizes.route'));
 app.use('/product-categories', require('./routes/api/productCategories.route'));
-app.use('/baskets', require('./routes/api/basket.route'));
+app.use('/basket', require('./routes/api/basket.route'));
 
 app.use(errorHandler);
 // handle UNKNOWN URL REQUESTS

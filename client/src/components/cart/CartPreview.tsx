@@ -13,7 +13,7 @@ interface CartProps {
 }
 const Cart: React.FC<CartProps> = ({ isVisible, onCloseCart }) => {
   const cartRef = useRef<HTMLDivElement>(null);
-  const basketData = useAppSelector((state) => state.basket);
+  const basketData = useAppSelector((state) => state.basket.data);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -28,7 +28,7 @@ const Cart: React.FC<CartProps> = ({ isVisible, onCloseCart }) => {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  });
+  }, [basketData]);
 
   function handleRemoveSize(productId: string, priceAndSizeId: string) {
     dispatch(basketSliceActions.removeSize({ productId, priceAndSizeId }));
@@ -71,10 +71,10 @@ const Cart: React.FC<CartProps> = ({ isVisible, onCloseCart }) => {
             />
           </div>
           <div className={c.productsList}>
-            {basketData.basket.map((basketItem) => (
+            {basketData.products.map((product) => (
               <CartItem
-                key={basketItem.product.id}
-                basketItem={basketItem}
+                key={product.product.id}
+                basketItem={product}
                 onSizeRemove={handleRemoveSize}
                 onQuantityChange={handleQuantityChange}
               />

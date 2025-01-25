@@ -2,7 +2,11 @@ import mongoose from 'mongoose';
 import { BasketUpdateData } from '../api/magnetsServer/generated';
 import { DB_COLLECTIONS, MongoDocument } from '../config/MongoDBConfig';
 
-export interface BasketDocument extends MongoDocument<BasketUpdateData> {}
+export interface BasketUpdateDocument extends BasketUpdateData {
+  userId: string;
+}
+
+export interface BasketDocument extends MongoDocument<BasketUpdateDocument> {}
 
 const basketSchema = new mongoose.Schema({
   userId: String, //TODO: in future, update for userId mongo object
