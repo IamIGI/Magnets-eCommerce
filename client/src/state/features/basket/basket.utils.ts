@@ -1,4 +1,10 @@
-import { BasketItem } from '../../../api/magnetsServer/generated';
+import {
+  BasketItem,
+  BasketItemUpdateData,
+} from '../../../api/magnetsServer/generated';
+import magnetsServerApi from '../../../api/magnetsServer/magnetsServer.api.config';
+import { parameters } from '../../../config/parameters';
+import { BasketData } from './basket.interfaces';
 
 function calculateTotalQuantity(basketItems: BasketItem[]): number {
   return basketItems.reduce(
@@ -53,9 +59,41 @@ function getNewItemQuantity(
   return previousQuantity;
 }
 
+async function updateBasket(
+  userId: string | undefined,
+  basket: BasketData
+): Promise<void> {
+  if (userId) {
+    const updatedProductsPayload = basket.products.map(
+      (product) =>
+        ({
+          productId: product.product.id,
+          priceAndSizesArray: product.priceAndSizesArray.map((ps) => ({
+            itemId: ps.item.id,
+            quantity: ps.quantity,
+            totalPrice: ps.totalPrice,
+          })),
+          totalPrice: product.totalPrice,
+        } as BasketItemUpdateData)
+    );
+    const payload = {
+      products: updatedProductsPayload,
+      totalPrice: basket.totalPrice,
+      totalQuantity: basket.totalQuantity,
+    };
+    await magnetsServerApi.basketService.updateBasket(payload, userId);
+  } else {
+    localStorage.setItem(
+      parameters.localStorages.basket,
+      JSON.stringify(basket)
+    );
+  }
+}
+
 export default {
   calculateTotalQuantity,
   calculateTotalBasketPrice,
   getNewItemQuantity,
   calculateTotalBasketItemPrice,
+  updateBasket,
 };

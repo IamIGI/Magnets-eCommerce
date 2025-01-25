@@ -5,7 +5,10 @@ import CartItem from './cartItem/CartItem';
 import StyledIcon from '../ui/styledIcon/StyledIcon';
 import Price from '../ui/price/Price';
 import { useAppDispatch, useAppSelector } from '../../state/store';
-import { basketSliceActions } from '../../state/features/basket/basket.slice';
+import {
+  changeBasketItemQuantity,
+  removeBasketItemSize,
+} from '../../state/features/basket/basket.slice';
 
 interface CartProps {
   isVisible: boolean;
@@ -31,7 +34,7 @@ const Cart: React.FC<CartProps> = ({ isVisible, onCloseCart }) => {
   }, [basketData]);
 
   function handleRemoveSize(productId: string, priceAndSizeId: string) {
-    dispatch(basketSliceActions.removeSize({ productId, priceAndSizeId }));
+    dispatch(removeBasketItemSize({ productId, priceAndSizeId }));
   }
 
   function handleQuantityChange(
@@ -39,13 +42,8 @@ const Cart: React.FC<CartProps> = ({ isVisible, onCloseCart }) => {
     productId: string,
     priceAndSizeId: string
   ) {
-    console.log(basketData);
     dispatch(
-      basketSliceActions.changeQuantity({
-        productId,
-        priceAndSizeId,
-        operation,
-      })
+      changeBasketItemQuantity({ productId, priceAndSizeId, operation })
     );
   }
 

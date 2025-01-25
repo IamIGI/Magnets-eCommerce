@@ -1,13 +1,18 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { BasketItemUpdateData } from '../../../api/magnetsServer/generated';
 import basketUtils from './basket.utils';
 import magnetsServerApi from '../../../api/magnetsServer/magnetsServer.api.config';
 import { parameters } from '../../../config/parameters';
 import { FetchStatus } from '../../../interfaces/global';
-import { AddToBasket, BasketData, BasketState } from './basket.interfaces';
+import {
+  AddToBasket,
+  BasketData,
+  BasketState,
+  ChangeBasketItemQuantity,
+  RemoveBasketItemSize,
+} from './basket.interfaces';
 import { AppState } from '../../store';
 
-const TEMP_USERID = '678a180dcb9fe85068c49122';
+const TEMP_USERID = undefined;
 
 //TODO: Move to param db
 export const QUANTITY_ARR = [1, 5, 10, 20, 30, 40, 50, 75, 100, 150, 200, 250];
@@ -28,12 +33,13 @@ export const getBasket = createAsyncThunk(
     if (TEMP_USERID) {
       let basket = await magnetsServerApi.basketService.getBasket(TEMP_USERID);
 
-      localStorage.removeItem(parameters.localStorages.basket);
       if (!basket) {
         basket = await magnetsServerApi.basketService.createBasket({
           userId: TEMP_USERID,
         });
       }
+
+      localStorage.removeItem(parameters.localStorages.basket);
 
       return {
         products: basket.products,
@@ -57,212 +63,159 @@ export const getBasket = createAsyncThunk(
 
 export const addToBasket = createAsyncThunk(
   'basket/add',
-  async (data: AddToBasket, thunkAPI) => {
-    try {
-      const { priceAndSizeId, product, quantity } = data;
-      const basket = structuredClone(
-        (thunkAPI.getState() as AppState).basket.data
+  async (data: AddToBasket, thunkAPI): Promise<BasketData> => {
+    const { priceAndSizeId, product, quantity } = data;
+    const basket = structuredClone(
+      (thunkAPI.getState() as AppState).basket.data
+    );
+
+    // Find the selected price and size
+    const selectedPriceAndSize = product.pricesAndSizes.find(
+      (ps) => ps.id === priceAndSizeId
+    );
+    if (!selectedPriceAndSize) {
+      throw new Error(
+        `Price and size with id ${priceAndSizeId} not found for product ${product.id}`
       );
+    }
 
-      // Extract the selected price and size
-      const selectedPriceAndSize = product.pricesAndSizes.find(
-        (ps) => ps.id === priceAndSizeId
-      );
-      if (!selectedPriceAndSize) {
-        throw new Error(
-          `Price and size with id ${priceAndSizeId} not found for product ${product.id}`
-        );
-      }
+    // Find existing product and size in the basket
+    const existingProduct = basket.products.find(
+      (item) => item.product.id === product.id
+    );
+    const existingSize = existingProduct?.priceAndSizesArray.find(
+      (ps) => ps.item.id === priceAndSizeId
+    );
 
-      // Check if the product already exists in the basket
-      const existingProductIndex = basket.products.findIndex(
-        (basketItem) => basketItem.product.id === product.id
-      );
-
-      if (existingProductIndex !== -1) {
-        const existingProduct = basket.products[existingProductIndex];
-        const existingSizeIndex = existingProduct.priceAndSizesArray.findIndex(
-          (ps) => ps.item.id === priceAndSizeId
-        );
-
-        if (existingSizeIndex !== -1) {
-          // Update the quantity and total price for the existing size in product
-          existingProduct.priceAndSizesArray[existingSizeIndex].quantity =
-            quantity;
-          existingProduct.priceAndSizesArray[existingSizeIndex].totalPrice =
-            selectedPriceAndSize.price * quantity;
-        } else {
-          // Add the new size to the product
-          existingProduct.priceAndSizesArray.push({
+    if (existingProduct && existingSize) {
+      // Update existing size
+      existingSize.quantity = quantity;
+      existingSize.totalPrice = selectedPriceAndSize.price * quantity;
+    } else if (existingProduct) {
+      // Add new size to existing product
+      existingProduct.priceAndSizesArray.push({
+        item: selectedPriceAndSize,
+        quantity,
+        totalPrice: selectedPriceAndSize.price * quantity,
+      });
+    } else {
+      // Add new product with size
+      basket.products.push({
+        product,
+        priceAndSizesArray: [
+          {
             item: selectedPriceAndSize,
             quantity,
             totalPrice: selectedPriceAndSize.price * quantity,
-          });
-        }
+          },
+        ],
+        totalPrice: selectedPriceAndSize.price * quantity,
+      });
+    }
 
-        // Update the total price for the product
-        basket.products[existingProductIndex] = existingProduct;
-        basket.products[existingProductIndex].totalPrice =
-          basketUtils.calculateTotalBasketItemPrice(existingProduct);
-        basket.totalQuantity = basketUtils.calculateTotalQuantity(
-          basket.products
-        );
-        basket.totalPrice = basketUtils.calculateTotalBasketPrice(
-          basket.products
-        );
+    // Update totals
+    basket.totalQuantity = basketUtils.calculateTotalQuantity(basket.products);
+    basket.totalPrice = basketUtils.calculateTotalBasketPrice(basket.products);
+
+    await basketUtils.updateBasket(TEMP_USERID, basket);
+
+    return basket;
+  }
+);
+
+export const changeBasketItemQuantity = createAsyncThunk(
+  'basket/changeQuantity',
+  async (
+    data: ChangeBasketItemQuantity,
+    thunkAPI
+  ): Promise<BasketData | undefined> => {
+    const { productId, priceAndSizeId, operation } = data;
+    const state = thunkAPI.getState() as AppState;
+    const basket = structuredClone(state.basket.data);
+
+    const basketItem = basket.products.find(
+      (item) => item.product.id === productId
+    );
+    if (!basketItem) return;
+
+    // Find the price for the given size
+    const priceForSize = basketItem.product.pricesAndSizes.find(
+      (ps) => ps.id === priceAndSizeId
+    )?.price;
+    if (!priceForSize) {
+      throw new Error(`Price not found for priceAndSizeId ${priceAndSizeId}`);
+    }
+
+    // Find the priceAndSize item
+    const priceAndSizeItem = basketItem.priceAndSizesArray.find(
+      (ps) => ps.item.id === priceAndSizeId
+    );
+    if (!priceAndSizeItem) return;
+
+    // Calculate new quantity
+    const newQuantity = basketUtils.getNewItemQuantity(
+      QUANTITY_ARR,
+      priceAndSizeItem.quantity,
+      operation
+    );
+    if (newQuantity === priceAndSizeItem.quantity) return;
+
+    // Update quantities and prices
+    priceAndSizeItem.quantity = newQuantity;
+    priceAndSizeItem.totalPrice = newQuantity * priceForSize;
+    basketItem.totalPrice =
+      basketUtils.calculateTotalBasketItemPrice(basketItem);
+    basket.totalQuantity = basketUtils.calculateTotalQuantity(basket.products);
+    basket.totalPrice = basketUtils.calculateTotalBasketPrice(basket.products);
+
+    // Update the basket
+    await basketUtils.updateBasket(TEMP_USERID, basket);
+
+    return basket;
+  }
+);
+
+export const removeBasketItemSize = createAsyncThunk(
+  'basket/removeSize',
+  async (
+    data: RemoveBasketItemSize,
+    thunkAPI
+  ): Promise<BasketData | undefined> => {
+    const { productId, priceAndSizeId } = data;
+    let basket = structuredClone((thunkAPI.getState() as AppState).basket.data);
+    const product = basket.products.find(
+      (item) => item.product.id === productId
+    );
+    if (product) {
+      const newProductSizes = product.priceAndSizesArray.filter(
+        (ps) => ps.item.id !== priceAndSizeId
+      );
+      if (newProductSizes.length > 0) {
+        product.priceAndSizesArray = newProductSizes;
       } else {
-        // Add the new product with its size and quantity
-        basket.products.push({
-          product,
-          priceAndSizesArray: [
-            {
-              item: selectedPriceAndSize,
-              quantity,
-              totalPrice: selectedPriceAndSize.price * quantity,
-            },
-          ],
-          totalPrice: selectedPriceAndSize.price * quantity,
-        });
-      }
-
-      // Update the basket totals
-      basket.totalQuantity = basketUtils.calculateTotalQuantity(
-        basket.products
-      );
-      basket.totalPrice = basketUtils.calculateTotalBasketPrice(
-        basket.products
-      );
-
-      if (TEMP_USERID) {
-        const updatedProductsPayload = basket.products.map(
-          (product) =>
-            ({
-              productId: product.product.id,
-              priceAndSizesArray: product.priceAndSizesArray.map((ps) => ({
-                itemId: ps.item.id,
-                quantity: ps.quantity,
-                totalPrice: ps.totalPrice,
-              })),
-              totalPrice: product.totalPrice,
-            } as BasketItemUpdateData)
+        //remove whole product from products
+        const updatedBasketItems = basket.products.filter(
+          (item) => item.product.id !== productId
         );
-        const payload = {
-          products: updatedProductsPayload,
-          totalPrice: basket.totalPrice,
-          totalQuantity: basket.totalQuantity,
+
+        basket = {
+          products: updatedBasketItems,
+          totalPrice: basketUtils.calculateTotalBasketPrice(updatedBasketItems),
+          totalQuantity: basketUtils.calculateTotalQuantity(updatedBasketItems),
         };
-
-        await magnetsServerApi.basketService.updateBasket(payload, TEMP_USERID);
-      } else {
-        localStorage.setItem(
-          parameters.localStorages.basket,
-          JSON.stringify(basket)
-        );
       }
+
+      await basketUtils.updateBasket(TEMP_USERID, basket);
 
       return basket;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      console.error('Failed to add item to basket:', error);
-      return thunkAPI.rejectWithValue(
-        error.response?.data || 'Failed to add item to basket'
-      );
     }
   }
 );
 
-//TODO: MEC-116
-//Fetch by userId
-// export const fetchBasket = createAsyncThunk()
-
 const basketSlice = createSlice({
   name: 'products',
   initialState,
-  reducers: {
-    // Change the quantity of an item in the products
-    changeQuantity(
-      state,
-      action: PayloadAction<{
-        productId: string;
-        priceAndSizeId: string;
-        operation: '+' | '-';
-      }>
-    ) {
-      const { productId, priceAndSizeId, operation } = action.payload;
-      const basketItem = state.data.products.find(
-        (item) => item.product.id === productId
-      );
-
-      if (basketItem) {
-        const priceForSize = basketItem.product.pricesAndSizes.find(
-          (ps) => ps.id === priceAndSizeId
-        )?.price;
-        if (priceForSize === undefined) {
-          throw new Error(
-            `Price not found for priceAndSizeId ${priceAndSizeId}`
-          );
-        }
-
-        const priceAndSizeItem = basketItem.priceAndSizesArray.find(
-          (ps) => ps.item.id === priceAndSizeId
-        );
-
-        if (priceAndSizeItem) {
-          const newQuantity = basketUtils.getNewItemQuantity(
-            QUANTITY_ARR,
-            priceAndSizeItem.quantity,
-            operation
-          );
-
-          priceAndSizeItem.quantity = newQuantity;
-          priceAndSizeItem.totalPrice = newQuantity * priceForSize;
-          basketItem.totalPrice =
-            basketUtils.calculateTotalBasketItemPrice(basketItem);
-          state.data.totalQuantity = basketUtils.calculateTotalQuantity(
-            state.data.products
-          );
-          state.data.totalPrice = basketUtils.calculateTotalBasketPrice(
-            state.data.products
-          );
-        }
-      }
-    },
-    // Remove size and product if last size is removed
-    removeSize(
-      state,
-      action: PayloadAction<{
-        productId: string;
-        priceAndSizeId: string;
-      }>
-    ) {
-      console.log('removeSize');
-      const { productId, priceAndSizeId } = action.payload;
-      const product = state.data.products.find(
-        (item) => item.product.id === productId
-      );
-      if (product) {
-        const newProductSizes = product.priceAndSizesArray.filter(
-          (ps) => ps.item.id !== priceAndSizeId
-        );
-        if (newProductSizes.length > 0) {
-          product.priceAndSizesArray = newProductSizes;
-        } else {
-          //remove whole product from products
-          const updatedBasket = state.data.products.filter(
-            (item) => item.product.id !== productId
-          );
-          return {
-            fetchStatus: FetchStatus.Idle,
-            data: {
-              products: updatedBasket,
-              totalPrice: basketUtils.calculateTotalBasketPrice(updatedBasket),
-              totalQuantity: basketUtils.calculateTotalQuantity(updatedBasket),
-            },
-          };
-        }
-      }
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(getBasket.pending, (state) => {
@@ -289,6 +242,36 @@ const basketSlice = createSlice({
         }
       )
       .addCase(addToBasket.rejected, (state) => {
+        state.fetchStatus = FetchStatus.Failed;
+      })
+      .addCase(changeBasketItemQuantity.pending, (state) => {
+        state.fetchStatus = FetchStatus.Loading;
+      })
+      .addCase(
+        changeBasketItemQuantity.fulfilled,
+        (state, action: PayloadAction<BasketData | undefined>) => {
+          if (action.payload) {
+            state.data = action.payload;
+          }
+          state.fetchStatus = FetchStatus.Idle;
+        }
+      )
+      .addCase(changeBasketItemQuantity.rejected, (state) => {
+        state.fetchStatus = FetchStatus.Failed;
+      })
+      .addCase(removeBasketItemSize.pending, (state) => {
+        state.fetchStatus = FetchStatus.Loading;
+      })
+      .addCase(
+        removeBasketItemSize.fulfilled,
+        (state, action: PayloadAction<BasketData | undefined>) => {
+          if (action.payload) {
+            state.data = action.payload;
+          }
+          state.fetchStatus = FetchStatus.Idle;
+        }
+      )
+      .addCase(removeBasketItemSize.rejected, (state) => {
         state.fetchStatus = FetchStatus.Failed;
       });
   },
