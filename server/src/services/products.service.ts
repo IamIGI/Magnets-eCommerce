@@ -1,7 +1,7 @@
 import { Product, ProductUpdateData } from '../api/magnetsServer/generated';
 import { DB_COLLECTIONS } from '../config/MongoDBConfig';
 import { ProductPayload } from '../controllers/products.controller';
-import { createCustomError } from '../handlers/error.handler';
+import { createCustomError } from '../middelware/error.handler';
 import productMapper from '../mappers/product.mapper';
 import ProductModel, { ProductDocument } from '../models/Products.model';
 import { HttpStatusCode } from '../types/error.type';

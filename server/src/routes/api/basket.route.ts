@@ -1,11 +1,11 @@
-import express from 'express';
+import { Router } from 'express';
 import basketController from '../../controllers/basket.controller';
 
-const router = express.Router();
+const basketRoutes = Router();
 
-router.route('/').post(basketController.create);
-router.route('/:id').get(basketController.getByUserId);
-router.route('/:id').put(basketController.updateByUserId);
-router.route('/:id').delete(basketController.removeByUserId);
+basketRoutes.route('/').post(basketController.create);
+basketRoutes.route('/:id').get(basketController.getByUserId);
+basketRoutes.route('/:id').put(basketController.updateByUserId);
+basketRoutes.route('/:id').delete(basketController.removeByUserId);
 
-export = router;
+export default basketRoutes;

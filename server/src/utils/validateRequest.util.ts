@@ -1,4 +1,4 @@
-import { createCustomError } from '../handlers/error.handler';
+import { createCustomError } from '../middelware/error.handler';
 import { HttpStatusCode } from '../types/error.type';
 
 const VALIDATION = 'VALIDATION';

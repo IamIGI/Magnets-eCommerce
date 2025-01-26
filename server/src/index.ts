@@ -2,13 +2,20 @@ import dotenv from 'dotenv';
 //Load env variables -- have to be before imports, that could use this env variables
 dotenv.config();
 
-import path from 'path';
 import express, { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import connectDB from './config/MongoDBConfig';
 import corsOptions from './config/corsOptions';
-import { errorHandler } from './handlers/error.handler';
+import { errorHandler, unknownURLHandler } from './middelware/error.handler';
+import cookieParser from 'cookie-parser';
+import catchErrors from './utils/catchErrors';
+import { HttpStatusCode } from './types/error.type';
+import authRoutes from './routes/auth.route';
+import productRoutes from './routes/api/products.route';
+import basketRoutes from './routes/api/basket.route';
+import priceAndSizesRoutes from './routes/api/pricesAndSizes.route';
+import productCategoriesRoutes from './routes/api/productCategories.route';
 
 const PORT = process.env.PORT || 4000;
 
@@ -16,11 +23,11 @@ const PORT = process.env.PORT || 4000;
 mongoose.set('strictQuery', false);
 connectDB();
 const app = express();
-//CORS configuration
-app.use(cors(corsOptions));
 
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
+app.use(express.json()); //allows to parse JSON request bodies
+app.use(express.urlencoded({ extended: true })); //parse FORM data
+app.use(cors(corsOptions));
+app.use(cookieParser());
 
 app.use((req: Request, res: Response, next: NextFunction) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
@@ -28,26 +35,20 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 });
 
 //ApiRoutes
-app.use('/products', require('./routes/api/products.route'));
-app.use('/prices-sizes', require('./routes/api/pricesAndSizes.route'));
-app.use('/product-categories', require('./routes/api/productCategories.route'));
-app.use('/basket', require('./routes/api/basket.route'));
+app.get('/', (req, res, next) => {
+  res.status(HttpStatusCode.OK).json({ status: 'Healthy' });
+});
+app.use('/auth', authRoutes);
+app.use('/products', productRoutes);
+app.use('/prices-sizes', priceAndSizesRoutes);
+app.use('/product-categories', productCategoriesRoutes);
+app.use('/basket', basketRoutes);
 
 app.use(errorHandler);
-// handle UNKNOWN URL REQUESTS
-app.all('*', (req: Request, res: Response) => {
-  res.status(404);
-  if (req.accepts('json')) {
-    res.json({ error: '404: not found' });
-  } else if (req.accepts('html')) {
-    res.sendFile(path.join(__dirname, 'views', '404.html'));
-  } else {
-    res.type('txt').send('404: not found');
-  }
-});
+app.all('*', unknownURLHandler);
 
 mongoose.connection.once('open', () => {
-  console.log('Connected to MongoDB');
+  console.log('Successfully connected to MongoDB');
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
   });

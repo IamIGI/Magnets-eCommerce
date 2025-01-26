@@ -1,14 +1,10 @@
 import mongoose from 'mongoose';
+import { DB_URL } from '../constants/env';
 
 export type MongoDocument<T> = Omit<mongoose.Document<any>, '_id'> &
   T & {
     _id: string; // Enforce _id as string
   };
-
-const DB_URL =
-  process.env.PROD === 'true'
-    ? process.env.DATABASE_URI_PROD
-    : process.env.DATABASE_URI_DEV;
 
 export enum DB_COLLECTIONS {
   Products = 'Products',
@@ -17,13 +13,13 @@ export enum DB_COLLECTIONS {
   Baskets = 'Baskets',
 }
 
-const connectDB = async () => {
+const connectToDatabase = async () => {
   try {
-    await mongoose.connect(DB_URL!);
+    await mongoose.connect(DB_URL);
   } catch (err) {
-    console.error('DB no connection');
-    console.error(err);
+    console.error('Could not connect to datanse\n', err);
+    process.exit(1); //Shut down the server
   }
 };
 
-export default connectDB;
+export default connectToDatabase;

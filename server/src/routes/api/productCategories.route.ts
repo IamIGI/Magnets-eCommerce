@@ -1,11 +1,13 @@
-import express from 'express';
+import { Router } from 'express';
 import productCategoriesController from '../../controllers/productCategories.controller';
 
-const router = express.Router();
+const productCategoriesRoutes = Router();
 
-router.route('/').get(productCategoriesController.getAll);
-router.route('/').post(productCategoriesController.add);
-router.route('/:id').put(productCategoriesController.editById);
-router.route('/:id').delete(productCategoriesController.removeById);
+productCategoriesRoutes.route('/').get(productCategoriesController.getAll);
+productCategoriesRoutes.route('/').post(productCategoriesController.add);
+productCategoriesRoutes.route('/:id').put(productCategoriesController.editById);
+productCategoriesRoutes
+  .route('/:id')
+  .delete(productCategoriesController.removeById);
 
-export = router;
+export default productCategoriesRoutes;

@@ -1,5 +1,5 @@
 import { PricesAndSizesPayload } from '../controllers/pricesAndSizes.controller';
-import { createCustomError } from '../handlers/error.handler';
+import { createCustomError } from '../middelware/error.handler';
 import PriceAndSizeModel from '../models/PricesAndSizes.model';
 import { HttpStatusCode } from '../types/error.type';
 

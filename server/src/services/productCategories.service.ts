@@ -1,5 +1,5 @@
 import { ProductCategoryPayload } from '../controllers/productCategories.controller';
-import { createCustomError } from '../handlers/error.handler';
+import { createCustomError } from '../middelware/error.handler';
 import ProductCategoryModel from '../models/ProductCategories.model';
 import { HttpStatusCode } from '../types/error.type';
 

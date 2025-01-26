@@ -1,6 +1,6 @@
 import { BasketUpdateData } from '../api/magnetsServer/generated';
 import { DB_COLLECTIONS } from '../config/MongoDBConfig';
-import { createCustomError } from '../handlers/error.handler';
+import { createCustomError } from '../middelware/error.handler';
 import basketMapper from '../mappers/basket.mapper';
 import BasketModel, {
   BasketDocument,

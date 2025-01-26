@@ -1,11 +1,11 @@
-import express from 'express';
+import { Router } from 'express';
 import pricesAndSizesController from '../../controllers/pricesAndSizes.controller';
 
-const router = express.Router();
+const priceAndSizesRoutes = Router();
 
-router.route('/').get(pricesAndSizesController.getAll);
-router.route('/').post(pricesAndSizesController.add);
-router.route('/:id').put(pricesAndSizesController.editById);
-router.route('/:id').delete(pricesAndSizesController.removeById);
+priceAndSizesRoutes.route('/').get(pricesAndSizesController.getAll);
+priceAndSizesRoutes.route('/').post(pricesAndSizesController.add);
+priceAndSizesRoutes.route('/:id').put(pricesAndSizesController.editById);
+priceAndSizesRoutes.route('/:id').delete(pricesAndSizesController.removeById);
 
-export = router;
+export default priceAndSizesRoutes;
