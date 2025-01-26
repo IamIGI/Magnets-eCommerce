@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import productCategoriesService from '../services/productCategories.service';
 import { ProductCategory } from '../api/magnetsServer/generated';
-import validateRequestUtil from '../utils/validateRequest.util';
+import validateRequestUtil from '../utils/validateRequest.utils';
 
 export type ProductCategoryPayload = Omit<ProductCategory, '_id'>;
 const REQUIRED_KEYS: Array<keyof ProductCategoryPayload> = [

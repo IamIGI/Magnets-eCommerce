@@ -1,5 +1,8 @@
 import { z } from 'zod';
-import catchErrors from '../utils/catchErrors';
+import catchErrors from '../utils/catchErrors.utils';
+import authService from '../services/auth.service';
+import { HttpStatusCode } from '../types/error.type';
+import cookiesUtils from '../utils/cookies.utils';
 
 const registerSchema = z
   .object({
@@ -14,9 +17,16 @@ const registerSchema = z
   });
 
 export const register = catchErrors(async (req, res) => {
-  const request = registerSchema.parse({
+  const payload = registerSchema.parse({
     ...req.body,
     userAgent: req.headers['user-Agent'],
   });
-  res.status(200).json({ message: 'Register' });
+
+  const { user, accessToken, refreshToken } = await authService.createAccount(
+    payload
+  );
+  return cookiesUtils
+    .setAuthCookies({ res, accessToken, refreshToken })
+    .status(HttpStatusCode.Created)
+    .json(user);
 });

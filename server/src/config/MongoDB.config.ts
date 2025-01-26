@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { DB_URL } from '../constants/env';
+import envConstants from '../constants/env.constants';
 
 export type MongoDocument<T> = Omit<mongoose.Document<any>, '_id'> &
   T & {
@@ -11,11 +11,14 @@ export enum DB_COLLECTIONS {
   PricesAndSizes = 'PricesAndSizes',
   ProductCategories = 'ProductCategories',
   Baskets = 'Baskets',
+  Users = 'Users',
+  VerificationCodes = 'VerificationCodes',
+  Sessions = 'Sessions',
 }
 
 const connectToDatabase = async () => {
   try {
-    await mongoose.connect(DB_URL);
+    await mongoose.connect(envConstants.DB_URL);
   } catch (err) {
     console.error('Could not connect to datanse\n', err);
     process.exit(1); //Shut down the server

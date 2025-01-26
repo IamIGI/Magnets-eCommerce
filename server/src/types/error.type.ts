@@ -70,4 +70,5 @@ export enum HttpStatusCode {
   LoopDetected = 508,
   NotExtended = 510,
   NetworkAuthenticationRequired = 511,
-}
+} // This enum creates object in JS code, so it can be referenced
+//Export const enum, create values directly in builded JS code, do not reference to this enum object

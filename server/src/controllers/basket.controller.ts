@@ -4,7 +4,7 @@ import {
   BasketItemUpdateDataPriceAndSizesArrayInner,
   BasketUpdateData,
 } from '../api/magnetsServer/generated';
-import validateRequestUtil from '../utils/validateRequest.util';
+import validateRequestUtil from '../utils/validateRequest.utils';
 import basketsService from '../services/baskets.service';
 
 const REQUIRED_KEYS: Array<keyof BasketUpdateData> = [

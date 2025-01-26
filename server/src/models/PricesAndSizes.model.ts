@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import { PriceAndSizes } from '../api/magnetsServer/generated';
-import { DB_COLLECTIONS, MongoDocument } from '../config/MongoDBConfig';
+import { DB_COLLECTIONS, MongoDocument } from '../config/MongoDB.config';
 
 export interface PriceAndSizesDocument extends MongoDocument<PriceAndSizes> {}
 

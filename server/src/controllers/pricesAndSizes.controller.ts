@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { PriceAndSizes } from '../api/magnetsServer/generated';
-import validateRequestUtil from '../utils/validateRequest.util';
+import validateRequestUtil from '../utils/validateRequest.utils';
 import pricesAndSizesService from '../services/pricesAndSizes.service';
 
 export type PricesAndSizesPayload = Omit<PriceAndSizes, '_id'>;

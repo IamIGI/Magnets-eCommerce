@@ -1,5 +1,5 @@
 import { Product, ProductUpdateData } from '../api/magnetsServer/generated';
-import { DB_COLLECTIONS } from '../config/MongoDBConfig';
+import { DB_COLLECTIONS } from '../config/MongoDB.config';
 import { ProductPayload } from '../controllers/products.controller';
 import { createCustomError } from '../middelware/error.handler';
 import productMapper from '../mappers/product.mapper';

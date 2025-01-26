@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { DB_COLLECTIONS, MongoDocument } from '../config/MongoDBConfig';
+import { DB_COLLECTIONS, MongoDocument } from '../config/MongoDB.config';
 import { ProductCategory } from '../api/magnetsServer/generated';
 
 export interface ProductCategoryDocument

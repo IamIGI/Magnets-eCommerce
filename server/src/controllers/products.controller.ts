@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import productsService from '../services/products.service';
 import { ProductUpdateData } from '../api/magnetsServer/generated';
-import validateRequestUtil from '../utils/validateRequest.util';
+import validateRequestUtil from '../utils/validateRequest.utils';
 
 export interface ProductPayload
   extends Omit<ProductUpdateData, 'createDate' | 'editDate'> {}
