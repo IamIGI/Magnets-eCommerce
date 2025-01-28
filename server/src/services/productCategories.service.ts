@@ -1,76 +1,50 @@
 import { ProductCategoryPayload } from '../controllers/productCategories.controller';
-import { createCustomError } from '../middelware/error.handler';
 import ProductCategoryModel from '../models/ProductCategories.model';
-import { HttpStatusCode } from '../types/error.type';
+import { HttpStatusCode } from '../constants/error.constants';
+import { DB_COLLECTIONS } from '../config/MongoDB.config';
+import appAssert from '../utils/appErrorAssert.utils';
 
-const SERVICE_NAME = 'Product Categories';
+const SERVICE_NAME = DB_COLLECTIONS.ProductCategories;
 
 const getAll = async () => {
-  try {
-    const categories = await ProductCategoryModel.find();
-    return categories;
-  } catch (err: any) {
-    throw createCustomError(
-      HttpStatusCode.InternalServerError,
-      SERVICE_NAME,
-      JSON.stringify(err)
-    );
-  }
+  const categories = await ProductCategoryModel.find();
+  return categories;
 };
 
 const add = async (category: ProductCategoryPayload) => {
-  try {
-    const productCategory = new ProductCategoryModel(category);
-
-    return await productCategory.save();
-  } catch (err: any) {
-    throw createCustomError(
-      HttpStatusCode.InternalServerError,
-      SERVICE_NAME,
-      JSON.stringify(err)
-    );
-  }
+  const productCategory = new ProductCategoryModel(category);
+  return await productCategory.save();
 };
 
 const editById = async (id: string, data: ProductCategoryPayload) => {
-  try {
-    return await ProductCategoryModel.findByIdAndUpdate(id, data, {
+  const updatedProduct = await ProductCategoryModel.findByIdAndUpdate(
+    id,
+    data,
+    {
       new: true,
-    }).then((data) => {
-      if (!data) {
-        throw createCustomError(
-          HttpStatusCode.NotFound,
-          SERVICE_NAME,
-          `Not found, id: ${id}`
-        );
-      }
-      return data;
-    });
-  } catch (err: any) {
-    throw err;
-  }
+    }
+  );
+
+  appAssert(
+    updatedProduct,
+    HttpStatusCode.NotFound,
+    `Not found, id: ${id}`,
+    SERVICE_NAME
+  );
+
+  return updatedProduct;
 };
 
-/**
- * Delete a product by its ID.
- * @param {string} id - The ID of the product to delete.
- * @returns {Promise<void>} A promise that resolves when the product is deleted.
- */
-const removeById = async (id: string): Promise<void> => {
-  try {
-    await ProductCategoryModel.findByIdAndDelete(id).then((data) => {
-      if (!data) {
-        throw createCustomError(
-          HttpStatusCode.NotFound,
-          SERVICE_NAME,
-          `Not found, id: ${id}`
-        );
-      }
-      return data;
-    });
-  } catch (err: any) {
-    throw err;
-  }
+const removeById = async (id: string) => {
+  const removedItem = ProductCategoryModel.findByIdAndDelete(id);
+  appAssert(
+    removedItem,
+    HttpStatusCode.NotFound,
+    `Not found, id: ${id}`,
+    SERVICE_NAME
+  );
+
+  return removedItem;
 };
 
 export default {

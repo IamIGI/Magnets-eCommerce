@@ -1,14 +1,16 @@
 import envConstants from '../constants/env.constants';
 import VerificationCodeType from '../constants/verificationCodeType.constants';
-import { createCustomError } from '../middelware/error.handler';
 import SessionModel from '../models/Session.model';
-import UserModal from '../models/User.model';
+import UserModEl from '../models/User.model';
 import VerificationCodeModel from '../models/VerificationCode.model';
-import { HttpStatusCode } from '../types/error.type';
+import { HttpStatusCode } from '../constants/error.constants';
 import dateUtils from '../utils/date.utils';
 import jwt from 'jsonwebtoken';
+import { DB_COLLECTIONS } from '../config/MongoDB.config';
+import appAssert from '../utils/appErrorAssert.utils';
+import UserModel from '../models/User.model';
 
-const SERVICE_NAME = 'Auth';
+const SERVICE_NAME = DB_COLLECTIONS.Users;
 
 export type CreateAccountParams = {
   email: string;
@@ -17,19 +19,18 @@ export type CreateAccountParams = {
 };
 
 const createAccount = async (data: CreateAccountParams) => {
-  const existingUser = await UserModal.exists({ email: data.email });
+  const existingUser = await UserModel.exists({ email: data.email });
 
   //Verfiy if user already exists
-  if (existingUser) {
-    throw createCustomError(
-      HttpStatusCode.Forbidden,
-      SERVICE_NAME,
-      `'User already exists`
-    );
-  }
+  appAssert(
+    !existingUser,
+    HttpStatusCode.Conflict,
+    'Email already in use',
+    SERVICE_NAME
+  );
 
   //create User
-  const user = await UserModal.create({
+  const user = await UserModEl.create({
     email: data.email,
     password: data.password,
   });
@@ -69,12 +70,38 @@ const createAccount = async (data: CreateAccountParams) => {
   );
 
   return {
-    user,
+    user: user.omitPassword(),
     accessToken,
     refreshToken,
   };
 };
 
+type LoginParams = {
+  email: string;
+  password: string;
+  userAgent?: string;
+};
+
+const login = async ({ email, password, userAgent }: LoginParams) => {
+  //get the user by email
+  const user = await UserModel.findOne({ email });
+
+  appAssert(
+    user,
+    HttpStatusCode.Unauthorized,
+    'Invalid email or password',
+    SERVICE_NAME
+  );
+
+  const isValid = await user.comparePassword(password);
+
+  // validate the password from the request
+  // create a session
+  //sign access and refresh tokens
+  // return user & tokens
+};
+
 export default {
   createAccount,
+  login,
 };

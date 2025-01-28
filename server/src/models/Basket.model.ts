@@ -9,12 +9,7 @@ export interface BasketUpdateDocument extends BasketUpdateData {
 export interface BasketDocument extends MongoDocument<BasketUpdateDocument> {}
 
 const basketSchema = new mongoose.Schema({
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: DB_COLLECTIONS.Users,
-    required: true,
-    index: true, //use it as index, cuz we will search by userId
-  },
+  userId: String,
   products: [
     {
       productId: {
@@ -36,9 +31,22 @@ const basketSchema = new mongoose.Schema({
       totalPrice: Number,
     },
   ],
-  totalQuantity: Number,
-  totalPrice: Number,
+  totalQuantity: {
+    type: Number,
+    required: true,
+  },
+  totalPrice: {
+    type: Number,
+    required: true,
+  },
 });
+
+// userId: {
+//   type: mongoose.Schema.Types.ObjectId,
+//   ref: DB_COLLECTIONS.Users,
+//   required: true,
+//   index: true, //use it as index, cuz we will search by userId
+// },
 
 const BasketModel = mongoose.model<BasketDocument>(
   DB_COLLECTIONS.Baskets,

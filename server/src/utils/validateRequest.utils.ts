@@ -1,23 +1,21 @@
-import { createCustomError } from '../middelware/error.handler';
-import { HttpStatusCode } from '../types/error.type';
+import { HttpStatusCode } from '../constants/error.constants';
+import AppError from './appError.utils';
 
-const VALIDATION = 'VALIDATION';
+const VALIDATION = 'Validation';
 
 function validateId(id: string | null, idName?: string) {
+  console.log('validateId');
+  console.log(id);
+  if (id === ':id') {
+    throw new AppError(HttpStatusCode.NotAcceptable, 'ID is empty', VALIDATION);
+  }
   if (!id || id.length !== 24) {
-    console.log('t1');
-    console.log(idName !== undefined, idName);
-    console.log(
-      `${
-        idName !== undefined ? `${idName} || ` : ''
-      }Provided ID is not valid: ${id}`
-    );
-    throw createCustomError(
+    throw new AppError(
       HttpStatusCode.NotAcceptable,
-      'VALIDATION',
       `${
         idName !== undefined ? `${idName} || ` : ''
-      }Provided ID is not valid: ${id}`
+      }Provided ID is not valid: ${id}`,
+      VALIDATION
     );
   }
 }
@@ -27,25 +25,30 @@ function isValidPayload<T>(
   requiredKeys: Array<keyof T>,
   payloadName?: string
 ): void {
-  if (!payload || typeof payload !== 'object') {
-    throw createCustomError(
+  console.log(payload);
+  if (
+    !payload ||
+    typeof payload !== 'object' ||
+    JSON.stringify(payload) === '{}'
+  ) {
+    throw new AppError(
       HttpStatusCode.NotAcceptable,
-      VALIDATION,
       `${
         payloadName !== undefined ? `${payloadName} || ` : ''
-      }No payload provided`
+      }No payload provided`,
+      VALIDATION
     );
   }
 
   for (const key of requiredKeys) {
     // Check for missing keys
     if (!(key in payload)) {
-      throw createCustomError(
+      throw new AppError(
         HttpStatusCode.NotAcceptable,
-        VALIDATION,
         `${
           payloadName !== undefined ? `${payloadName} || ` : ''
-        }Missing required key: ${String(key)}`
+        }Missing required key: ${String(key)}`,
+        VALIDATION
       );
     }
 
@@ -55,21 +58,21 @@ function isValidPayload<T>(
       payload[key] === undefined ||
       (typeof payload[key] === 'string' && payload[key].length === 0)
     ) {
-      throw createCustomError(
+      throw new AppError(
         HttpStatusCode.NotAcceptable,
-        VALIDATION,
         `${payloadName ? `${payloadName} || ` : ''}Key '${String(
           key
-        )}' is empty.`
+        )}' is empty.`,
+        VALIDATION
       );
     }
 
     //Check for unnecessary keys
     if (requiredKeys.length < Object.keys(payload).length) {
-      throw createCustomError(
+      throw new AppError(
         HttpStatusCode.NotAcceptable,
-        VALIDATION,
-        `Payload has too many keys. Required keys: ${requiredKeys}`
+        `Payload has too many keys. Required keys: ${requiredKeys}`,
+        VALIDATION
       );
     }
   }
@@ -85,26 +88,26 @@ function isValidArraySize(
   if (exactly) {
     console.log(value);
     if (value.length !== min && value.length !== max) {
-      throw createCustomError(
+      throw new AppError(
         HttpStatusCode.NotAcceptable,
-        VALIDATION,
-        `Key ${keyName} have to has array length exactly ${min} or ${max}`
+        `Key ${keyName} have to has array length exactly ${min} or ${max}`,
+        VALIDATION
       );
     }
   } else {
     if (value.length < min) {
-      throw createCustomError(
+      throw new AppError(
         HttpStatusCode.NotAcceptable,
-        VALIDATION,
-        `Key ${keyName} have to has array of MIN length: ${min}`
+        `Key ${keyName} have to has array of MIN length: ${min}`,
+        VALIDATION
       );
     }
 
     if (value.length > max) {
-      throw createCustomError(
+      throw new AppError(
         HttpStatusCode.NotAcceptable,
-        VALIDATION,
-        `Key ${keyName} have to has array of MAX length: ${max}`
+        `Key ${keyName} have to has array of MAX length: ${max}`,
+        VALIDATION
       );
     }
   }

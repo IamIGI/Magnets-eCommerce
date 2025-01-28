@@ -1,12 +1,12 @@
 import { Product, ProductUpdateData } from '../api/magnetsServer/generated';
 import { DB_COLLECTIONS } from '../config/MongoDB.config';
 import { ProductPayload } from '../controllers/products.controller';
-import { createCustomError } from '../middelware/error.handler';
 import productMapper from '../mappers/product.mapper';
 import ProductModel, { ProductDocument } from '../models/Products.model';
-import { HttpStatusCode } from '../types/error.type';
+import { HttpStatusCode } from '../constants/error.constants';
+import appAssert from '../utils/appErrorAssert.utils';
 
-const SERVICE_NAME = 'Products';
+const SERVICE_NAME = DB_COLLECTIONS.Products;
 
 async function applyProductPopulation<T>(query: any): Promise<T> {
   return query
@@ -21,108 +21,76 @@ async function applyProductPopulation<T>(query: any): Promise<T> {
 }
 
 const getAll = async (): Promise<Product[]> => {
-  try {
-    // Use populate to automatically fetch related data
-    const products = await applyProductPopulation<ProductDocument[]>(
-      ProductModel.find()
-    );
+  const products = await applyProductPopulation<ProductDocument[]>(
+    ProductModel.find()
+  );
 
-    const productsData = products.map((product) =>
-      productMapper.mapProductDocumentToProduct(product)
-    );
+  const productsData = products.map((product) =>
+    productMapper.mapProductDocumentToProduct(product)
+  );
 
-    return productsData;
-  } catch (err: any) {
-    throw createCustomError(
-      HttpStatusCode.InternalServerError,
-      SERVICE_NAME,
-      JSON.stringify(err)
-    );
-  }
+  return productsData;
 };
 
 const getById = async (id: string) => {
-  try {
-    const product = await applyProductPopulation<ProductDocument>(
-      ProductModel.findById(id)
-    );
+  const product = await applyProductPopulation<ProductDocument>(
+    ProductModel.findById(id)
+  );
 
-    if (!product) {
-      throw createCustomError(
-        HttpStatusCode.NotFound,
-        SERVICE_NAME,
-        `Not found. UserId: ${id}`
-      );
-    }
+  appAssert(
+    product,
+    HttpStatusCode.NotFound,
+    `Not found. UserId: ${id}`,
+    SERVICE_NAME
+  );
 
-    return productMapper.mapProductDocumentToProduct(product);
-  } catch (err: any) {
-    throw err;
-  }
+  return productMapper.mapProductDocumentToProduct(product);
 };
 
 const add = async (productData: ProductPayload): Promise<ProductDocument> => {
-  try {
-    const newProduct: ProductUpdateData = {
-      ...productData,
-      createDate: new Date().toISOString(),
-      editDate: new Date().toISOString(),
-    };
+  const newProduct: ProductUpdateData = {
+    ...productData,
+    createDate: new Date().toISOString(),
+    editDate: new Date().toISOString(),
+  };
 
-    const product = new ProductModel(newProduct);
+  const product = new ProductModel(newProduct);
 
-    return await product.save();
-  } catch (err: any) {
-    throw createCustomError(
-      HttpStatusCode.InternalServerError,
-      SERVICE_NAME,
-      JSON.stringify(err)
-    );
-  }
+  return await product.save();
 };
 
 const editById = async (id: string, productData: ProductPayload) => {
-  try {
-    const product = await ProductModel.findById(id);
+  const product = await ProductModel.findById(id);
 
-    if (!product) {
-      throw createCustomError(
-        HttpStatusCode.NotFound,
-        SERVICE_NAME,
-        `Not found. UserId: ${id}`
-      );
-    }
+  appAssert(
+    product,
+    HttpStatusCode.NotFound,
+    `Not found. UserId: ${id}`,
+    SERVICE_NAME
+  );
 
-    const updateData: ProductUpdateData = {
-      ...productData,
-      createDate: product.createDate,
-      editDate: new Date().toISOString(),
-    };
+  const updateData: ProductUpdateData = {
+    ...productData,
+    createDate: product.createDate,
+    editDate: new Date().toISOString(),
+  };
 
-    return await ProductModel.findByIdAndUpdate(id, updateData, {
-      new: true,
-      runValidators: true,
-    });
-  } catch (err: any) {
-    throw err;
-  }
+  return await ProductModel.findByIdAndUpdate(id, updateData, {
+    new: true,
+    runValidators: true,
+  });
 };
 
 const removeById = async (id: string) => {
-  try {
-    return await ProductModel.findByIdAndDelete(id).then((data) => {
-      if (!data) {
-        throw createCustomError(
-          HttpStatusCode.NotFound,
-          SERVICE_NAME,
-          `Not found, id: ${id}`
-        );
-      }
-      return data;
-    });
-  } catch (err: any) {
-    throw err;
-  }
+  const removedProduct = await ProductModel.findByIdAndDelete(id);
+  appAssert(
+    removedProduct,
+    HttpStatusCode.NotFound,
+    `Not found. id: ${id}`,
+    SERVICE_NAME
+  );
+
+  return removedProduct;
 };
 
 export default {

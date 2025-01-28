@@ -1,4 +1,3 @@
-import { NextFunction, Request, Response } from 'express';
 import {
   BasketItemUpdateData,
   BasketItemUpdateDataPriceAndSizesArrayInner,
@@ -6,6 +5,7 @@ import {
 } from '../api/magnetsServer/generated';
 import validateRequestUtil from '../utils/validateRequest.utils';
 import basketsService from '../services/baskets.service';
+import catchErrors from '../utils/catchErrors.utils';
 
 const REQUIRED_KEYS: Array<keyof BasketUpdateData> = [
   'products',
@@ -22,90 +22,63 @@ const REQUIRED_KEYS_PRICE_AND_SIZES_ARRAY: Array<
   keyof BasketItemUpdateDataPriceAndSizesArrayInner
 > = ['itemId', 'quantity', 'totalPrice'];
 
-const getByUserId = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const { id } = req.params;
+const getByUserId = catchErrors(async (req, res) => {
+  const { id } = req.params;
+  console.log('ID: ', id);
+  validateRequestUtil.validateId(id, 'userId');
 
-    validateRequestUtil.validateId(id, 'userId');
+  const basket = await basketsService.getByUserId(id);
 
-    const basket = await basketsService.getByUserId(id);
+  res.status(200).json(basket);
+});
 
-    res.status(200).json(basket);
-  } catch (err: any) {
-    next(err);
-  }
-};
+const create = catchErrors(async (req, res) => {
+  const payload = req.body as { userId: string };
 
-const create = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const payload = req.body as { userId: string };
+  validateRequestUtil.validateId(payload.userId!, 'UserId');
 
-    validateRequestUtil.validateId(payload.userId!, 'UserId');
+  const newBasket = await basketsService.create(payload.userId);
 
-    const newBasket = await basketsService.create(payload.userId);
+  res.status(201).json(newBasket);
+});
 
-    res.status(201).json(newBasket);
-  } catch (err: any) {
-    next(err);
-  }
-};
+const updateByUserId = catchErrors(async (req, res) => {
+  const { id } = req.params; //userId
+  const payload = req.body as BasketUpdateData;
 
-const updateByUserId = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const { id } = req.params; //userId
-    const payload = req.body as BasketUpdateData;
-
-    validateRequestUtil.validateId(id, 'UserId');
-    validateRequestUtil.isValidPayload<BasketUpdateData>(
-      payload,
-      REQUIRED_KEYS
+  validateRequestUtil.validateId(id, 'UserId');
+  validateRequestUtil.isValidPayload<BasketUpdateData>(payload, REQUIRED_KEYS);
+  payload.products?.forEach((product) => {
+    validateRequestUtil.isValidPayload(
+      product,
+      REQUIRED_KEYS_BASKET_ITEM,
+      'Product'
     );
-    payload.products?.forEach((product) => {
-      validateRequestUtil.isValidPayload(
-        product,
-        REQUIRED_KEYS_BASKET_ITEM,
-        'Product'
+    if (product.priceAndSizesArray) {
+      product.priceAndSizesArray?.forEach((ps) =>
+        validateRequestUtil.isValidPayload(
+          ps,
+          REQUIRED_KEYS_PRICE_AND_SIZES_ARRAY,
+          'Price and Size item'
+        )
       );
-      if (product.priceAndSizesArray) {
-        product.priceAndSizesArray?.forEach((ps) =>
-          validateRequestUtil.isValidPayload(
-            ps,
-            REQUIRED_KEYS_PRICE_AND_SIZES_ARRAY,
-            'Price and Size item'
-          )
-        );
-      }
-    });
+    }
+  });
 
-    const updatedBasket = await basketsService.updateByUserId(id, payload);
+  const updatedBasket = await basketsService.updateByUserId(id, payload);
 
-    res.status(200).json(updatedBasket);
-  } catch (err: any) {
-    next(err);
-  }
-};
+  res.status(200).json(updatedBasket);
+});
 
-const removeByUserId = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const { id } = req.params;
+const removeByUserId = catchErrors(async (req, res) => {
+  const { id } = req.params;
 
-    validateRequestUtil.validateId(id, 'UserId');
+  validateRequestUtil.validateId(id, 'UserId');
 
-    await basketsService.removeByUserId(id);
+  await basketsService.removeByUserId(id);
 
-    res.status(200).send({ id });
-  } catch (err: any) {
-    next(err);
-  }
-};
+  res.status(200).send({ id });
+});
 
 export default {
   getByUserId,

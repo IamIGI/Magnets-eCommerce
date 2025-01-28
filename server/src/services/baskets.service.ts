@@ -1,14 +1,14 @@
 import { BasketUpdateData } from '../api/magnetsServer/generated';
 import { DB_COLLECTIONS } from '../config/MongoDB.config';
-import { createCustomError } from '../middelware/error.handler';
 import basketMapper from '../mappers/basket.mapper';
 import BasketModel, {
   BasketDocument,
   BasketUpdateDocument,
 } from '../models/Basket.model';
-import { HttpStatusCode } from '../types/error.type';
+import { HttpStatusCode } from '../constants/error.constants';
+import appAssert from '../utils/appErrorAssert.utils';
 
-const SERVICE_NAME = 'Baskets';
+const SERVICE_NAME = DB_COLLECTIONS.Baskets;
 
 async function applyBasketPopulation<T>(query: any): Promise<T> {
   return query
@@ -33,37 +33,30 @@ async function applyBasketPopulation<T>(query: any): Promise<T> {
 }
 
 const getByUserId = async (id: string) => {
-  try {
-    const data = await applyBasketPopulation<BasketDocument>(
-      BasketModel.findOne({ userId: id })
-    ).then((basket) => {
-      if (!basket) {
-        throw createCustomError(
-          HttpStatusCode.NotFound,
-          SERVICE_NAME,
-          `Not found. UserId: ${id}`
-        );
-      }
+  const basket = await applyBasketPopulation<BasketDocument>(
+    BasketModel.findOne({ userId: id })
+  );
 
-      return basketMapper.mapBasketDocumentToBasket(basket);
-    });
+  appAssert(
+    basket,
+    HttpStatusCode.NotFound,
+    `Not found. UserId: ${id}`,
+    SERVICE_NAME
+  );
 
-    return data;
-  } catch (err: any) {
-    throw err;
-  }
+  return basketMapper.mapBasketDocumentToBasket(basket);
 };
 
 const create = async (userId: string) => {
   try {
-    const isDataExists = await BasketModel.findOne({ userId });
-    if (isDataExists) {
-      throw createCustomError(
-        HttpStatusCode.NotFound,
-        SERVICE_NAME,
-        `User already have basket, userId: ${userId}`
-      );
-    }
+    const isUserHaveBasket = await BasketModel.findOne({ userId });
+
+    appAssert(
+      !isUserHaveBasket,
+      HttpStatusCode.NotFound,
+      `User already have basket, userId: ${userId}`,
+      SERVICE_NAME
+    );
 
     const newBasket: BasketUpdateDocument = {
       userId,
@@ -72,7 +65,7 @@ const create = async (userId: string) => {
       totalQuantity: 0,
     };
 
-    await new BasketModel().save();
+    await new BasketModel(newBasket).save();
     return newBasket;
   } catch (err: any) {
     throw err;
@@ -81,22 +74,22 @@ const create = async (userId: string) => {
 
 const updateByUserId = async (id: string, data: BasketUpdateData) => {
   try {
-    return await applyBasketPopulation<BasketDocument>(
+    const updatedBasket = await applyBasketPopulation<BasketDocument>(
       BasketModel.findOneAndUpdate(
         { userId: id },
         { $set: data },
         { new: true, runValidators: true }
       )
-    ).then((basket) => {
-      if (!basket) {
-        throw createCustomError(
-          HttpStatusCode.NotFound,
-          SERVICE_NAME,
-          `not found. UserId: ${id}`
-        );
-      }
-      return basketMapper.mapBasketDocumentToBasket(basket);
-    });
+    );
+
+    appAssert(
+      updatedBasket,
+      HttpStatusCode.NotFound,
+      `Not found. UserId: ${id}`,
+      SERVICE_NAME
+    );
+
+    return basketMapper.mapBasketDocumentToBasket(updatedBasket);
   } catch (err: any) {
     throw err;
   }
@@ -105,13 +98,13 @@ const updateByUserId = async (id: string, data: BasketUpdateData) => {
 const removeByUserId = async (id: string): Promise<void> => {
   try {
     const result = await BasketModel.deleteOne({ userId: id });
-    if (result.deletedCount === 0) {
-      throw createCustomError(
-        HttpStatusCode.NotFound,
-        SERVICE_NAME,
-        `Not found, UserId: ${id}`
-      );
-    }
+
+    appAssert(
+      result.deletedCount > 0,
+      HttpStatusCode.NotFound,
+      `Not found, UserId: ${id}`,
+      SERVICE_NAME
+    );
   } catch (err: any) {
     throw err;
   }

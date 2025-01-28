@@ -1,7 +1,8 @@
 import { Response, Request, ErrorRequestHandler } from 'express';
-import { HttpStatusCode } from '../types/error.type';
+import { HttpStatusCode } from '../constants/error.constants';
 import path from 'path';
 import { z } from 'zod';
+import AppError from '../utils/appError.utils';
 
 export interface CustomError extends Error {
   code: HttpStatusCode;
@@ -20,24 +21,24 @@ const handleZodError = (res: Response, err: z.ZodError) => {
   });
 };
 
-export function createCustomError(
-  code: HttpStatusCode,
-  serviceName: string,
-  message: string
-) {
-  const error = new Error(message) as CustomError;
-  error.name = 'CustomError';
-  error.code = code;
-  error.service = serviceName;
-
-  return error;
-}
+const handleAppError = (res: Response, err: AppError) => {
+  return res.status(err.statusCode).json({
+    service: err.service,
+    errorCode: err.appErrorCode,
+    message: err.message,
+  });
+};
 
 export const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
   console.log(`PATH: "${req.path}"\n`, err);
   if (err instanceof z.ZodError) {
     handleZodError(res, err);
   }
+
+  if (err instanceof AppError) {
+    handleAppError(res, err);
+  }
+  console.log('t1');
 
   const statusCode = err.code || HttpStatusCode.InternalServerError;
 

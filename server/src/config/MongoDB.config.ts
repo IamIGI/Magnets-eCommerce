@@ -6,7 +6,7 @@ export type MongoDocument<T> = Omit<mongoose.Document<any>, '_id'> &
     _id: string; // Enforce _id as string
   };
 
-export enum DB_COLLECTIONS {
+export const enum DB_COLLECTIONS {
   Products = 'Products',
   PricesAndSizes = 'PricesAndSizes',
   ProductCategories = 'ProductCategories',
