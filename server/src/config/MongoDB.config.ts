@@ -20,7 +20,7 @@ const connectToDatabase = async () => {
   try {
     await mongoose.connect(envConstants.DB_URL);
   } catch (err) {
-    console.error('Could not connect to datanse\n', err);
+    console.error('Could not connect to database\n', err);
     process.exit(1); //Shut down the server
   }
 };

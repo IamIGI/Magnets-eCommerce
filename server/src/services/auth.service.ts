@@ -85,7 +85,6 @@ type LoginParams = {
 const login = async ({ email, password, userAgent }: LoginParams) => {
   //get the user by email
   const user = await UserModel.findOne({ email });
-
   appAssert(
     user,
     HttpStatusCode.Unauthorized,
@@ -93,12 +92,39 @@ const login = async ({ email, password, userAgent }: LoginParams) => {
     SERVICE_NAME
   );
 
-  const isValid = await user.comparePassword(password);
-
   // validate the password from the request
+  const isValid = await user.comparePassword(password);
+  appAssert(isValid, HttpStatusCode.Unauthorized, 'Invalid email or password');
+
   // create a session
+  const userId = user._id;
+  const session = await SessionModel.create({
+    userId,
+    userAgent,
+  });
+  const sessionInfo = {
+    sessionId: session._id,
+  };
   //sign access and refresh tokens
+  const refreshToken = jwt.sign(sessionInfo, envConstants.JWT_REFRESH_SECRET, {
+    audience: ['user'],
+    expiresIn: '30d',
+  });
+
+  const accessToken = jwt.sign(
+    { userId: user._id, ...sessionInfo },
+    envConstants.JWT_SECRET,
+    {
+      audience: ['user'],
+      expiresIn: '30M',
+    }
+  );
   // return user & tokens
+  return {
+    user: user.omitPassword(),
+    accessToken,
+    refreshToken,
+  };
 };
 
 export default {

@@ -26,6 +26,11 @@ export const login = catchErrors(async (req, res) => {
   });
 
   const { user, accessToken, refreshToken } = await authService.login(payload);
+
+  return cookiesUtils
+    .setAuthCookies({ res, accessToken, refreshToken })
+    .status(HttpStatusCode.OK)
+    .json(user);
 });
 
 export default { register, login };
