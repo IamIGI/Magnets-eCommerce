@@ -9,6 +9,7 @@ import jwt from 'jsonwebtoken';
 import { DB_COLLECTIONS } from '../config/MongoDB.config';
 import appAssert from '../utils/appErrorAssert.utils';
 import UserModel from '../models/User.model';
+import jwtUtils from '../utils/jwt.utils';
 
 const SERVICE_NAME = DB_COLLECTIONS.Users;
 
@@ -34,10 +35,11 @@ const createAccount = async (data: CreateAccountParams) => {
     email: data.email,
     password: data.password,
   });
+  const userId = user._id;
 
   //create verification code
   const verificationCode = await VerificationCodeModel.create({
-    userId: user._id,
+    userId,
     type: VerificationCodeType.EmailVerification,
     expiresAt: dateUtils.oneYearFromNowInMs(),
   });
@@ -46,28 +48,21 @@ const createAccount = async (data: CreateAccountParams) => {
 
   //create session
   const session = await SessionModel.create({
-    userId: user._id,
+    userId,
     userAgent: data.userAgent,
   });
 
   //sign access token & refresh token
-  const refreshToken = jwt.sign(
+  //sign access and refresh tokens
+  const refreshToken = jwtUtils.signToken(
     { sessionId: session._id },
-    envConstants.JWT_REFRESH_SECRET,
-    {
-      audience: ['user'],
-      expiresIn: '30d',
-    }
+    jwtUtils.refreshTokenSignOptions
   );
 
-  const accessToken = jwt.sign(
-    { userId: user._id, sessionId: session._id },
-    envConstants.JWT_SECRET,
-    {
-      audience: ['user'],
-      expiresIn: '30M',
-    }
-  );
+  const accessToken = jwtUtils.signToken({
+    sessionId: session._id,
+    userId,
+  });
 
   return {
     user: user.omitPassword(),
@@ -106,19 +101,13 @@ const login = async ({ email, password, userAgent }: LoginParams) => {
     sessionId: session._id,
   };
   //sign access and refresh tokens
-  const refreshToken = jwt.sign(sessionInfo, envConstants.JWT_REFRESH_SECRET, {
-    audience: ['user'],
-    expiresIn: '30d',
-  });
-
-  const accessToken = jwt.sign(
-    { userId: user._id, ...sessionInfo },
-    envConstants.JWT_SECRET,
-    {
-      audience: ['user'],
-      expiresIn: '30M',
-    }
+  const refreshToken = jwtUtils.signToken(
+    sessionInfo,
+    jwtUtils.refreshTokenSignOptions
   );
+
+  const accessToken = jwtUtils.signToken({ ...sessionInfo, userId: user._id });
+
   // return user & tokens
   return {
     user: user.omitPassword(),
