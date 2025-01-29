@@ -1,10 +1,11 @@
 import catchErrors from '../../utils/catchErrors.utils';
 import authService from '../../services/auth.service';
 import { HttpStatusCode } from '../../constants/error.constants';
-import cookiesUtils from '../../utils/cookies.utils';
+import cookiesUtils, { CookieKeys } from '../../utils/cookies.utils';
 import { loginSchema, registerSchema } from './auth.schemas';
 import jwtUtils from '../../utils/jwt.utils';
 import SessionModel from '../../models/Session.model';
+import appAssert from '../../utils/appErrorAssert.utils';
 
 const register = catchErrors(async (req, res) => {
   const payload = registerSchema.parse({
@@ -32,12 +33,12 @@ export const login = catchErrors(async (req, res) => {
   return cookiesUtils
     .setAuthCookies({ res, accessToken, refreshToken })
     .status(HttpStatusCode.OK)
-    .json(user);
+    .json('User logger successfully');
 });
 
 export const logout = catchErrors(async (req, res) => {
-  const accessToken = req.cookies.accessToken;
-  const { payload } = jwtUtils.verifyToken(accessToken);
+  const accessToken = req.cookies.accessToken as string | undefined;
+  const { payload } = jwtUtils.verifyToken(accessToken || '');
 
   if (payload) {
     await SessionModel.findByIdAndDelete(payload.sessionId);
@@ -48,4 +49,30 @@ export const logout = catchErrors(async (req, res) => {
   });
 });
 
-export default { register, login, logout };
+export const refresh = catchErrors(async (req, res) => {
+  const refreshToken = req.cookies.refreshToken as string | undefined;
+  appAssert(refreshToken, HttpStatusCode.Unauthorized, 'Missing refresh token');
+
+  const { accessToken, newRefreshToken } =
+    await authService.refreshUserAccessToken(refreshToken);
+
+  if (newRefreshToken) {
+    res.cookie(
+      CookieKeys.RefreshToken,
+      newRefreshToken,
+      cookiesUtils.getRefreshTokenCookieOptions()
+    );
+  }
+  return res
+    .status(HttpStatusCode.OK)
+    .cookie(
+      CookieKeys.AccessToken,
+      accessToken,
+      cookiesUtils.getAccessTokenCookieOptions()
+    )
+    .json({
+      message: 'Access token refreshed',
+    });
+});
+
+export default { register, login, logout, refresh };

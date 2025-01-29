@@ -3,6 +3,7 @@ import { HttpStatusCode } from '../constants/error.constants';
 import path from 'path';
 import { z } from 'zod';
 import AppError from '../utils/appError.utils';
+import cookiesUtils, { REFRESH_PATH } from '../utils/cookies.utils';
 
 export interface CustomError extends Error {
   code: HttpStatusCode;
@@ -31,6 +32,11 @@ const handleAppError = (res: Response, err: AppError) => {
 
 export const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
   console.log(`PATH: "${req.path}"\n`, err);
+
+  if (req.path === REFRESH_PATH) {
+    cookiesUtils.clearAuthCookies(res);
+  }
+
   if (err instanceof z.ZodError) {
     handleZodError(res, err);
   }

@@ -9,7 +9,7 @@ import jwt from 'jsonwebtoken';
 import { DB_COLLECTIONS } from '../config/MongoDB.config';
 import appAssert from '../utils/appErrorAssert.utils';
 import UserModel from '../models/User.model';
-import jwtUtils from '../utils/jwt.utils';
+import jwtUtils, { RefreshTokenPayload } from '../utils/jwt.utils';
 
 const SERVICE_NAME = DB_COLLECTIONS.Users;
 
@@ -116,7 +116,58 @@ const login = async ({ email, password, userAgent }: LoginParams) => {
   };
 };
 
+const refreshUserAccessToken = async (refreshToken: string) => {
+  const { payload } = jwtUtils.verifyToken<RefreshTokenPayload>(refreshToken, {
+    secret: jwtUtils.refreshTokenSignOptions.secret,
+  });
+  appAssert(
+    payload,
+    HttpStatusCode.Unauthorized,
+    'Invalid refresh token',
+    DB_COLLECTIONS.Sessions
+  );
+
+  const session = await SessionModel.findById(payload.sessionId);
+  //after 30d request, session was already deleted
+  const now = Date.now();
+  appAssert(
+    session && session.expiresAt.getTime() > now,
+    HttpStatusCode.Unauthorized,
+    'Session expired',
+    DB_COLLECTIONS.Sessions
+  );
+
+  //refresh the session if it expires in the next 5*24 hours
+
+  const sessionNeedsRefresh =
+    session.expiresAt.getTime() - now <= dateUtils.daysInMS(5);
+  if (sessionNeedsRefresh) {
+    session.expiresAt = dateUtils.thirtyDaysFromNowInMS();
+    await session.save();
+  }
+
+  const newRefreshToken = sessionNeedsRefresh
+    ? jwtUtils.signToken(
+        {
+          sessionId: session._id,
+        },
+        jwtUtils.refreshTokenSignOptions
+      )
+    : undefined;
+
+  const accessToken = jwtUtils.signToken({
+    userId: session.userId,
+    sessionId: session._id,
+  });
+
+  return {
+    accessToken,
+    newRefreshToken,
+  };
+};
+
 export default {
   createAccount,
   login,
+  refreshUserAccessToken,
 };

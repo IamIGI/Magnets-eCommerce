@@ -10,9 +10,12 @@ const thirtyDaysFromNowInMS = () =>
 
 const fifteenMinutesFromNowInMS = () => new Date(Date.now() + 1000 * 60 * 15);
 
+const daysInMS = (value: number) => 1000 * 60 * 60 * 24 * value;
+
 export default {
   getDate,
   oneYearFromNowInMs,
   thirtyDaysFromNowInMS,
   fifteenMinutesFromNowInMS,
+  daysInMS,
 };
