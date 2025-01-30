@@ -166,8 +166,49 @@ const refreshUserAccessToken = async (refreshToken: string) => {
   };
 };
 
+const verifyEmail = async (code: string) => {
+  //get the verification code
+  const validCode = await VerificationCodeModel.findOne({
+    _id: code,
+    type: VerificationCodeType.EmailVerification,
+    expiresAt: { $gt: new Date() },
+  });
+  appAssert(
+    validCode,
+    HttpStatusCode.NotFound,
+    'Invalid or expired verification code',
+    SERVICE_NAME
+  );
+
+  //update user the verified true
+  const updatedUser = await UserModel.findByIdAndUpdate(
+    validCode.userId,
+    {
+      verified: true,
+    },
+    {
+      new: true,
+    }
+  );
+  appAssert(
+    updatedUser,
+    HttpStatusCode.InternalServerError,
+    'Failed to verify email',
+    SERVICE_NAME
+  );
+
+  //delete verification code
+  await validCode.deleteOne();
+
+  //return user
+  return {
+    user: updatedUser.omitPassword(),
+  };
+};
+
 export default {
   createAccount,
   login,
   refreshUserAccessToken,
+  verifyEmail,
 };

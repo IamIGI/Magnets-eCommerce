@@ -2,7 +2,11 @@ import catchErrors from '../../utils/catchErrors.utils';
 import authService from '../../services/auth.service';
 import { HttpStatusCode } from '../../constants/error.constants';
 import cookiesUtils, { CookieKeys } from '../../utils/cookies.utils';
-import { loginSchema, registerSchema } from './auth.schemas';
+import {
+  loginSchema,
+  registerSchema,
+  verificationCodeSchema,
+} from './auth.schemas';
 import jwtUtils from '../../utils/jwt.utils';
 import SessionModel from '../../models/Session.model';
 import appAssert from '../../utils/appErrorAssert.utils';
@@ -75,4 +79,14 @@ export const refresh = catchErrors(async (req, res) => {
     });
 });
 
-export default { register, login, logout, refresh };
+export const verifyEmail = catchErrors(async (req, res) => {
+  const verificationCode = verificationCodeSchema.parse(req.params.code);
+
+  await authService.verifyEmail(verificationCode);
+
+  return res.status(HttpStatusCode.OK).json({
+    message: 'Email was successfully verified',
+  });
+});
+
+export default { register, login, logout, refresh, verifyEmail };
