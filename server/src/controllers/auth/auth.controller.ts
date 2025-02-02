@@ -3,8 +3,10 @@ import authService from '../../services/auth.service';
 import { HttpStatusCode } from '../../constants/error.constants';
 import cookiesUtils, { CookieKeys } from '../../utils/cookies.utils';
 import {
+  emailSchema,
   loginSchema,
   registerSchema,
+  resetPasswordSchema,
   verificationCodeSchema,
 } from './auth.schemas';
 import jwtUtils from '../../utils/jwt.utils';
@@ -32,12 +34,12 @@ export const login = catchErrors(async (req, res) => {
     userAgent: req.headers['user-Agent'],
   });
 
-  const { user, accessToken, refreshToken } = await authService.login(payload);
+  const { accessToken, refreshToken } = await authService.login(payload);
 
   return cookiesUtils
     .setAuthCookies({ res, accessToken, refreshToken })
     .status(HttpStatusCode.OK)
-    .json('User logger successfully');
+    .json({ message: 'Login successfully' });
 });
 
 export const logout = catchErrors(async (req, res) => {
@@ -84,9 +86,35 @@ export const verifyEmail = catchErrors(async (req, res) => {
 
   await authService.verifyEmail(verificationCode);
 
-  return res.status(HttpStatusCode.OK).json({
+  res.status(HttpStatusCode.OK).json({
     message: 'Email was successfully verified',
   });
 });
 
-export default { register, login, logout, refresh, verifyEmail };
+export const sendPasswordReset = catchErrors(async (req, res) => {
+  const email = emailSchema.parse(req.body.email);
+
+  await authService.sendPasswordResetEmail(email);
+  res.status(HttpStatusCode.OK).json({ message: 'Password reset email sent' });
+});
+
+export const resetPassword = catchErrors(async (req, res) => {
+  const request = resetPasswordSchema.parse(req.body);
+
+  await authService.resetPassword(request);
+
+  return cookiesUtils
+    .clearAuthCookies(res)
+    .status(HttpStatusCode.OK)
+    .json({ message: 'Password reset successful' });
+});
+
+export default {
+  register,
+  login,
+  logout,
+  refresh,
+  verifyEmail,
+  sendPasswordReset,
+  resetPassword,
+};

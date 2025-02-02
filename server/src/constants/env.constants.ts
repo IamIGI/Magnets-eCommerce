@@ -12,7 +12,7 @@ const DB_URL =
 
 const PROD = getEnv('PROD', 'false');
 const PORT = getEnv('PORT', '4000');
-const APP_ORIGIN = getEnv('APP_ORIGIN');
+const APP_ORIGIN = getEnv('APP_ORIGIN'); // frontend
 const JWT_SECRET = getEnv('JWT_SECRET');
 const JWT_REFRESH_SECRET = getEnv('JWT_REFRESH_SECRET');
 const EMAIL_SENDER = getEnv('EMAIL_SENDER');
