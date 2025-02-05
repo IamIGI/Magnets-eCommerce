@@ -16,6 +16,8 @@ import productRoutes from './routes/api/products.route';
 import basketRoutes from './routes/api/basket.route';
 import priceAndSizesRoutes from './routes/api/pricesAndSizes.route';
 import productCategoriesRoutes from './routes/api/productCategories.route';
+import authenticate from './middleware/authentication.middeleware';
+import userRoutes from './routes/api/user.route';
 
 const PORT = process.env.PORT || 4000;
 
@@ -43,6 +45,9 @@ app.use('/products', productRoutes);
 app.use('/prices-sizes', priceAndSizesRoutes);
 app.use('/product-categories', productCategoriesRoutes);
 app.use('/basket', basketRoutes);
+
+//protected routes
+app.use('/user', authenticate, userRoutes);
 
 app.use(errorHandler);
 app.all('*', unknownURLHandler);

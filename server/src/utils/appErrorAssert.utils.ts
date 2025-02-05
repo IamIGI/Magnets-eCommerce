@@ -3,7 +3,7 @@ import assert from 'node:assert';
 import AppError from './appError.utils';
 import { DB_COLLECTIONS } from '../config/MongoDB.config';
 
-export type Services = DB_COLLECTIONS | 'Validation';
+export type Services = DB_COLLECTIONS | 'Validation' | 'Authentication';
 
 type appAssert = (
   condition: any,
