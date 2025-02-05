@@ -18,6 +18,7 @@ import priceAndSizesRoutes from './routes/api/pricesAndSizes.route';
 import productCategoriesRoutes from './routes/api/productCategories.route';
 import authenticate from './middleware/authentication.middeleware';
 import userRoutes from './routes/api/user.route';
+import sessionRoutes from './routes/api/session.route';
 
 const PORT = process.env.PORT || 4000;
 
@@ -48,6 +49,7 @@ app.use('/basket', basketRoutes);
 
 //protected routes
 app.use('/user', authenticate, userRoutes);
+app.use('/sessions', authenticate, sessionRoutes);
 
 app.use(errorHandler);
 app.all('*', unknownURLHandler);
